@@ -12,15 +12,19 @@ import requests
 import json
 from lostark_api_token import Token
 
-headers = {
-    'accept': 'application/json',
-    'authorization': Token
-}
 
-url = 'https://developer-lostark.game.onstove.com/news/events'
+class Get_char_json:
 
-response = requests.get(url, headers=headers)
-jsonObject = response.json()
+    def __init__(self, char_name):
+        headers = {
+            'accept': 'application/json',
+            'authorization': Token
+        }
 
-print(response)
-print(jsonObject)
+        url = 'https://developer-lostark.game.onstove.com/characters/' + char_name + "/siblings"
+
+        response = requests.get(url, headers=headers)
+        jsonObject = response.json()
+
+        print(response)
+        print(jsonObject)
