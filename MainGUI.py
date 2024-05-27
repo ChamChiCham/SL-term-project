@@ -1,46 +1,78 @@
-import APIprocess
+from tkinter import *
+from tkinter import font
+from winsound import *
 
-name = input()
+OPTION1_X = 50
+OPTION2_X = OPTION1_X
+OPTION3_X = OPTION1_X
+OPTION4_X = OPTION1_X
+OPTION5_X = OPTION1_X
 
-new_API = APIprocess.Get_char_json(name)
+OPTION_Y_DIFF = 150
+OPTION1_Y = 100
+OPTION2_Y = OPTION1_Y + OPTION_Y_DIFF
+OPTION3_Y = OPTION2_Y + OPTION_Y_DIFF
+OPTION4_Y = OPTION3_Y + OPTION_Y_DIFF
+OPTION5_Y = OPTION4_Y + OPTION_Y_DIFF
 
-#꼭 먼저 선언
-new_API.getAmorizes()
-
-#리스트 형식으로 리턴받아야함, 필요한 것만 뽑아서 재가공함
-# 테스트--------------------------------------------------------------
-playerWeaponlist = new_API.GetplayerWeaponinfo()
-playerHeadlist = new_API.GetplayerHeadinfo()
-playerToplist = new_API.GetplayerTopinfo()
-playerUnderlist = new_API.GetplayerUnderinfo()
-playerHandlist = new_API.GetplayerHandsinfo()
-playershoulderlist = new_API.GetplayerPauldronsinfo()
+OPTION_SIZE_X = 10
+OPTION_SIZE_Y = 3
 
 
 
-playerNeckless = new_API.GetplayerNecklessinfo()
-playerEarRing1 = new_API.GetplayerEarRing1info()
-playerEarRing2 = new_API.GetplayerEarRing2info()
-playerRing1 = new_API.GetplayerRing1info()
-playerRing2 = new_API.GetplayerRing2info()
-playerStone = new_API.GetplayerStoneinfo()
-playerbracelet = new_API.GetplayerBraceletinfo()
+class mainGUI:
+    def __init__(self):
+        self.window = Tk()
+        self.window.title("Black Jack")
+        self.window.geometry("1280x960")
+        self.window.configure(bg="green")
 
-#리스트 삽입 순서는 1.이미지 2.타입 3.이름 4.강화 5.등급 6.품질
+        self.font_option = font.Font(self.window, size=16, family='맑은 고딕')
 
-print("장비-------------")
-print(playerWeaponlist)
-print(playerHeadlist)
-print(playerToplist)
-print(playerUnderlist)
-print(playerHandlist)
-print(playershoulderlist)
+        # place option
+        self.option_search = Button(self.window, text="유저 검색",\
+                                    width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
+                                    font=self.font_option, command=self.option_search_func)
+        self.option_search.place(x=OPTION1_X,y=OPTION1_Y)
 
-print("장신구-------------")
-print(playerNeckless)
-print(playerEarRing1)
-print(playerEarRing2)
-print(playerRing1)
-print(playerRing2)
-print(playerStone)
-print(playerbracelet)
+        self.option_goal = Button(self.window,text="목표치 설정", \
+                                    width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
+                                    font=self.font_option, command=self.option_goal_func)
+        self.option_goal.place(x=OPTION2_X,y=OPTION2_Y)
+
+        self.option_todo = Button(self.window,text="내 할일",\
+                                    width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
+                                    font=self.font_option, command=self.option_todo_func)
+        self.option_todo.place(x=OPTION3_X,y=OPTION3_Y)
+
+        self.option_history = Button(self.window,text="검색 기록", \
+                                    width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
+                                    font=self.font_option, command=self.option_history_func)
+        self.option_history.place(x=OPTION4_X,y=OPTION4_Y)
+
+        self.option_popup = Button(self.window,text="팝업 스토어",\
+                                    width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
+                                    font=self.font_option, command=self.option_popup_func)
+        self.option_popup.place(x=OPTION5_X,y=OPTION5_Y)
+
+        self.window.mainloop()
+
+    def option_search_func(self):
+        pass
+
+    def option_goal_func(self):
+        pass
+
+
+    def option_todo_func(self):
+        pass
+
+
+    def option_history_func(self):
+        pass
+
+    def option_popup_func(self):
+        pass
+
+
+        
