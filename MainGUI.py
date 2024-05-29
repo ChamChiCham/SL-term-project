@@ -30,8 +30,8 @@ SEARCH_ENTRY_Y = 100
 
 
 SEARCH_ITEM1_X = 350
-SEARCH_ITEM2_X = 700
-SEARCH_ITEM_Y = 125
+SEARCH_ITEM2_X = 800
+SEARCH_ITEM_Y = 140
 SEARCH_ITEM_DIFF = 120
 
 
@@ -44,7 +44,7 @@ class mainGUI:
 
         self.font_option = font.Font(self.window, size=20, family='맑은 고딕', weight="bold")
         self.font_search_entry = font.Font(self.window, size=20, family='맑은 고딕', weight="bold")
-        self.font_search_item = font.Font(self.window, size=16, family='맑은 고딕')
+        self.font_search_item_name = font.Font(self.window, size=14, family='맑은 고딕')
 
         # place option
         self.option_search = Button(self.window, text="유저 검색",\
@@ -81,10 +81,7 @@ class mainGUI:
             case "Search":
                 self.entry.destroy()
                 self.entry_button.destroy()
-                for item in self.items:
-                    if "Icon" in item:
-                        item["Icon"].destroy()
-                self.items = []
+                self._delete_item()
             case _:
                 pass
 
@@ -111,25 +108,32 @@ class mainGUI:
 
         self._make_item(name)
 
-    def _make_item_icon(self, image, x, y):
-        with urllib.request.urlopen(image) as u:
+    def _make_item_icon(self, x, y):
+        with urllib.request.urlopen(self.items[-1]["Info"][0]) as u:
              raw_data=u.read()
         im=Image.open(BytesIO(raw_data))
         self.image.append(ImageTk.PhotoImage(im))
         self.items[-1]["Icon"] = Button(self.window, image=self.image[-1])
         self.items[-1]["Icon"].place(x=x, y=y)
+        
 
+    def _make_item_name(self, x, y):
+        self.items[-1]["Name"] = Label(self.window,  text=self.items[-1]["Info"][2],\
+                                        font=self.font_search_item_name)
+        self.items[-1]["Name"].place(x=x + 80, y=y + 20)
 
-    
+    def _delete_item(self):
+        for item in self.items:
+            for key, obj in item.items():
+                if hasattr(obj, 'destroy'):
+                    obj.destroy()
+        self.items = []
 
     def _make_item(self, name):
         self.image = []
 
         # item delete
-        for item in self.items:
-            if "Icon" in item:
-                item["Icon"].destroy()
-        self.items = []
+        self._delete_item()
 
         # API init
         new_API = APIprocess.Get_char_json(name)
@@ -138,7 +142,8 @@ class mainGUI:
         def _make_item_each(func, x, y):
             self.items.append({})
             self.items[-1]["Info"] = func()
-            self._make_item_icon(self.items[-1]["Info"][0], x, y)
+            self._make_item_icon(x, y)
+            self._make_item_name(x, y)
 
 
         _make_item_each(new_API.GetplayerWeaponinfo,\
