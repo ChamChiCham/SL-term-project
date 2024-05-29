@@ -28,7 +28,6 @@ OPTION_SIZE_Y = 3
 SEARCH_ENTRY_X = 300
 SEARCH_ENTRY_Y = 100
 
-SEARCH_ITEM_SIZE = 10
 
 SEARCH_ITEM1_X = 350
 SEARCH_ITEM2_X = 700
@@ -39,7 +38,7 @@ SEARCH_ITEM_DIFF = 120
 class mainGUI:
     def __init__(self):
         self.window = Tk()
-        self.window.title("Black Jack")
+        self.window.title("너, 로아 열심히 하고 있니?")
         self.window.geometry("1280x960")
         self.window.configure(bg="green")
 
@@ -74,16 +73,26 @@ class mainGUI:
         self.option_popup.place(x=OPTION5_X,y=OPTION5_Y)
 
         self.objects = []
+        self.option = "None"
         self.window.mainloop()
 
     def clear_objects(self):
-        for o in self.objects:
-            o.destroy()
-        self.objects = []
-
+        match self.option:
+            case "Search":
+                self.entry.destroy()
+                self.entry_button.destroy()
+                for item in self.items:
+                    if "Icon" in item:
+                        item["Icon"].destroy()
+                self.items = []
+            case _:
+                pass
 
     def option_search_func(self):
+
+        # clear objects
         self.clear_objects()
+        self.option = "Search"
 
         # create entry and button
         self.entry = Entry(self.window, font=self.font_search_entry)
@@ -92,20 +101,8 @@ class mainGUI:
         self.entry_button = Button(self.window, width=10, height=5, command=self.option_search_button_func)
         self.entry_button.place(x=850, y=30)
 
-        self.objects.append(self.entry)
-        self.objects.append(self.entry_button)
-
-        # create item button
-        self.item = []
-        for i in range(7):
-            self.item.append(Label(self.window, width=8, height=4))
-            self.item[-1].place(x=SEARCH_ITEM1_X, y=SEARCH_ITEM_Y + i * SEARCH_ITEM_DIFF)
-            self.objects.append(self.item[-1])
-
-        for i in range(6):
-            self.item.append(Label(self.window, width=8, height=4))
-            self.item[-1].place(x=SEARCH_ITEM2_X, y=SEARCH_ITEM_Y + i * SEARCH_ITEM_DIFF)
-            self.objects.append(self.item[-1])
+        # create item icon
+        self.items = []
 
     def option_search_button_func(self):
         name = str(self.entry.get())
@@ -114,65 +111,69 @@ class mainGUI:
 
         self._make_item(name)
 
-
-    def _make_item_image(self, image, idx, x, y):
+    def _make_item_icon(self, image, x, y):
         with urllib.request.urlopen(image) as u:
              raw_data=u.read()
         im=Image.open(BytesIO(raw_data))
         self.image.append(ImageTk.PhotoImage(im))
-        self.item[idx].destroy()
-        self.item[idx] = Button(self.window, width=64, height=64, image=self.image[-1])
-        self.item[idx].place(x=x, y=y)
+        self.items[-1]["Icon"] = Button(self.window, image=self.image[-1])
+        self.items[-1]["Icon"].place(x=x, y=y)
+
+
+    
 
     def _make_item(self, name):
-        self.player = []
         self.image = []
+
+        # item delete
+        for item in self.items:
+            if "Icon" in item:
+                item["Icon"].destroy()
+        self.items = []
+
+        # API init
         new_API = APIprocess.Get_char_json(name)
         new_API.getAmorizes()
-        global cnt
-        cnt = 0
 
-        def make_item_each(func, x, y):
-            global cnt
-            self.player.append(func())
-            self._make_item_image(self.player[cnt][0], cnt, x, y)
-            cnt += 1
+        def _make_item_each(func, x, y):
+            self.items.append({})
+            self.items[-1]["Info"] = func()
+            self._make_item_icon(self.items[-1]["Info"][0], x, y)
 
-        make_item_each(new_API.GetplayerWeaponinfo,\
+
+        _make_item_each(new_API.GetplayerWeaponinfo,\
                        SEARCH_ITEM1_X, SEARCH_ITEM_Y)
-        make_item_each(new_API.GetplayerHeadinfo,\
+        _make_item_each(new_API.GetplayerHeadinfo,\
                        SEARCH_ITEM1_X, SEARCH_ITEM_Y + 1 * SEARCH_ITEM_DIFF)
-        make_item_each(new_API.GetplayerTopinfo,\
+        _make_item_each(new_API.GetplayerTopinfo,\
                        SEARCH_ITEM1_X, SEARCH_ITEM_Y + 2 * SEARCH_ITEM_DIFF)
-        make_item_each(new_API.GetplayerUnderinfo,\
+        _make_item_each(new_API.GetplayerUnderinfo,\
                        SEARCH_ITEM1_X, SEARCH_ITEM_Y + 3 * SEARCH_ITEM_DIFF)
-        make_item_each(new_API.GetplayerHandsinfo,\
+        _make_item_each(new_API.GetplayerHandsinfo,\
                        SEARCH_ITEM1_X, SEARCH_ITEM_Y + 4 * SEARCH_ITEM_DIFF)
-        make_item_each(new_API.GetplayerPauldronsinfo,\
+        _make_item_each(new_API.GetplayerPauldronsinfo,\
                        SEARCH_ITEM1_X, SEARCH_ITEM_Y + 5 * SEARCH_ITEM_DIFF)
-        make_item_each(new_API.GetplayerBraceletinfo,\
+        _make_item_each(new_API.GetplayerBraceletinfo,\
                        SEARCH_ITEM1_X, SEARCH_ITEM_Y + 6 * SEARCH_ITEM_DIFF)
         
-        make_item_each(new_API.GetplayerNecklessinfo,\
+        _make_item_each(new_API.GetplayerNecklessinfo,\
                        SEARCH_ITEM2_X, SEARCH_ITEM_Y)
-        make_item_each(new_API.GetplayerEarRing1info,\
+        _make_item_each(new_API.GetplayerEarRing1info,\
                        SEARCH_ITEM2_X, SEARCH_ITEM_Y + 1 * SEARCH_ITEM_DIFF)
-        make_item_each(new_API.GetplayerEarRing2info,\
+        _make_item_each(new_API.GetplayerEarRing2info,\
                        SEARCH_ITEM2_X, SEARCH_ITEM_Y + 2 * SEARCH_ITEM_DIFF)
-        make_item_each(new_API.GetplayerRing1info,\
+        _make_item_each(new_API.GetplayerRing1info,\
                        SEARCH_ITEM2_X, SEARCH_ITEM_Y + 3 * SEARCH_ITEM_DIFF)
-        make_item_each(new_API.GetplayerRing2info,\
+        _make_item_each(new_API.GetplayerRing2info,\
                        SEARCH_ITEM2_X, SEARCH_ITEM_Y + 4 * SEARCH_ITEM_DIFF)
-        # make_item_each(new_API.GetplayerStoneinfo,\
-        #                SEARCH_ITEM2_X, SEARCH_ITEM_Y + 5 * SEARCH_ITEM_DIFF)
+        _make_item_each(new_API.GetplayerStoneinfo,\
+                       SEARCH_ITEM2_X, SEARCH_ITEM_Y + 5 * SEARCH_ITEM_DIFF)
 
     def option_goal_func(self):
         self.clear_objects()
 
-
     def option_todo_func(self):
         self.clear_objects()
-
 
     def option_history_func(self):
         self.clear_objects()
