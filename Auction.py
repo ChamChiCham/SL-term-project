@@ -55,8 +55,7 @@ class getActionAPI:
         }
 
         tansformed_data = json.dumps(data)
-        self.response = requests.post(url, headers=self.postheaders, data=tansformed_data)
-
+        self.response = requests.post(url, headers=self.postheaders, data=data)
         self.res = requests.get(url,headers=self.getheaders)
         self.jsonObject = self.res
         print(self.response)

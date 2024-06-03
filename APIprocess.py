@@ -386,9 +386,3 @@ class Get_char_json:
         # Element_006여기부터 Element_000에 각인하나 001에 각인 하나 있음 이거 찾아야함
 
         return Braceletinfo
-
-a = input()
-b = Get_char_json(a)
-b.getAmorizes()
-c = b.GetplayerHeadinfo()
-print(c)
