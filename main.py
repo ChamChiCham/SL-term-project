@@ -1,6 +1,3 @@
-import APIprocess
-import Neededgold
-
 #name = input()
 
 #new_API = APIprocess.Get_char_json(name)
