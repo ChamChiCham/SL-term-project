@@ -25,33 +25,7 @@ class getActionAPI:
         url = 'https://developer-lostark.game.onstove.com/auctions/items'
 
         data = {
-            "ItemLevelMin": 0,
-            "ItemLevelMax": 0,
-            "ItemGradeQuality": None,
-            "SkillOptions": [
-                {
-                    "FirstOption": None,
-                    "SecondOption": None,
-                    "MinValue": None,
-                    "MaxValue": None
-                }
-            ],
-            "EtcOptions": [
-                {
-                    "FirstOption": None,
-                    "SecondOption": None,
-                    "MinValue": None,
-                    "MaxValue": None
-                }
-            ],
-            "Sort": "BIDSTART_PRICE",
-            "CategoryCode": 0,
-            "CharacterClass": None,
-            "ItemTier": None,
-            "ItemGrade": None,
-            "ItemName": None,
-            "PageNo": 0,
-            "SortCondition": "ASC"
+            "Name": "string"
         }
 
         tansformed_data = json.dumps(data)
@@ -62,4 +36,4 @@ class getActionAPI:
         print(self.jsonObject)
 
 b = getActionAPI()
-b.getAction("공허")
+b.getAction("")
