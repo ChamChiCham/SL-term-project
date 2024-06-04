@@ -19,13 +19,13 @@ import Neededgold
 
 
 
-playerNeckless = new_API.GetplayerNecklessinfo()
-playerEarRing1 = new_API.GetplayerEarRing1info()
-playerEarRing2 = new_API.GetplayerEarRing2info()
-playerRing1 = new_API.GetplayerRing1info()
-playerRing2 = new_API.GetplayerRing2info()
-playerStone = new_API.GetplayerStoneinfo()
-playerbracelet = new_API.GetplayerBraceletinfo()
+# playerNeckless = new_API.GetplayerNecklessinfo()
+# playerEarRing1 = new_API.GetplayerEarRing1info()
+# playerEarRing2 = new_API.GetplayerEarRing2info()
+# playerRing1 = new_API.GetplayerRing1info()
+# playerRing2 = new_API.GetplayerRing2info()
+# playerStone = new_API.GetplayerStoneinfo()
+# playerbracelet = new_API.GetplayerBraceletinfo()
 
 #
 # 무기/방어구   0.이미지 1.타입 2.이름 3.강화 4.등급 5.품질
@@ -39,14 +39,14 @@ playerbracelet = new_API.GetplayerBraceletinfo()
 # print(playerHandlist)
 # print(playershoulderlist)
 
-print("장신구-------------")
-print(playerNeckless)
-print(playerEarRing1)
-print(playerEarRing2)
-print(playerRing1)
-print(playerRing2)
-print(playerStone)
-print(playerbracelet)
+# print("장신구-------------")
+# print(playerNeckless)
+# print(playerEarRing1)
+# print(playerEarRing2)
+# print(playerRing1)
+# print(playerRing2)
+# print(playerStone)
+# print(playerbracelet)
 
 #--------------------------------- Neededgold사용법 ---------------------------------------------
 #print("목표 강화")
@@ -64,6 +64,6 @@ print(playerbracelet)
 #   3. 골드 리턴
 #--------------------------------- --------------- ---------------------------------------------
 
-#from MainGUI import mainGUI
+from MainGUI import mainGUI
 
-#mainGUI()
+mainGUI()
