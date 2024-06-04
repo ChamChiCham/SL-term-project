@@ -95,32 +95,40 @@ class mainGUI:
         self.entry = Entry(self.window, font=self.font_search_entry)
         self.entry.place(x=500, y=50)
 
-        self.entry_button = Button(self.window, width=10, height=5, command=self.option_search_button_func)
+        self.entry_button = Button(self.window, width=10, height=5, command=self.option_search_start_func)
         self.entry_button.place(x=850, y=30)
 
         # create item icon
         self.items = []
 
-    def option_search_button_func(self):
+    def option_search_start_func(self):
         name = str(self.entry.get())
         if not name:
             return
 
         self._make_item(name)
 
-    def _make_item_icon(self, x, y):
+
+    def _make_item_icon(self):
         with urllib.request.urlopen(self.items[-1]["Info"][0]) as u:
              raw_data=u.read()
         im=Image.open(BytesIO(raw_data))
         self.image.append(ImageTk.PhotoImage(im))
         self.items[-1]["Icon"] = Button(self.window, image=self.image[-1])
-        self.items[-1]["Icon"].place(x=x, y=y)
+        self.items[-1]["Icon"].place(x=self.items[-1]["x"], y=self.items[-1]["y"])
         
-
-    def _make_item_name(self, x, y):
+    def _make_item_name(self):
         self.items[-1]["Name"] = Label(self.window,  text=self.items[-1]["Info"][2],\
                                         font=self.font_search_item_name)
-        self.items[-1]["Name"].place(x=x + 80, y=y + 20)
+        self.items[-1]["Name"].place(x=self.items[-1]["x"] + 80, y=self.items[-1]["y"] + 20)
+
+    def _make_item_expl_on(self, idx):
+
+        show = self.items[-1]["Info"]
+        self.items[idx]["expl"] = Label
+
+    def _make_item_expl_on(self, idx):
+        self.items[idx]["expl"].destroy()
 
     def _delete_item(self):
         for item in self.items:
@@ -142,8 +150,10 @@ class mainGUI:
         def _make_item_each(func, x, y):
             self.items.append({})
             self.items[-1]["Info"] = func()
-            self._make_item_icon(x, y)
-            self._make_item_name(x, y)
+            self.items[-1]["x"] = x
+            self.items[-1]["y"] = y
+            self._make_item_icon()
+            self._make_item_name()
 
 
         _make_item_each(new_API.GetplayerWeaponinfo,\
