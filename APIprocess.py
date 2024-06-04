@@ -130,7 +130,6 @@ class Get_char_json:
         index = self.jsonObject[3]["Tooltip"].find("qualityValue")
         quality = re.sub(r'[^0-9]', '', self.jsonObject[3]["Tooltip"][index:index+20])
         underinfo.append(quality)
-
         return underinfo
 
     def GetplayerHandsinfo(self):

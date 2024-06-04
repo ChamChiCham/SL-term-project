@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import font
 from winsound import *
+from functools import partial
 
 from io import BytesIO
 import urllib
@@ -81,7 +82,7 @@ class mainGUI:
             case "Search":
                 self.entry.destroy()
                 self.entry_button.destroy()
-                self._delete_item()
+                self._delete_items()
             case _:
                 pass
 
@@ -108,13 +109,14 @@ class mainGUI:
 
         self._make_item(name)
 
-
     def _make_item_icon(self):
         with urllib.request.urlopen(self.items[-1]["Info"][0]) as u:
              raw_data=u.read()
         im=Image.open(BytesIO(raw_data))
         self.image.append(ImageTk.PhotoImage(im))
         self.items[-1]["Icon"] = Button(self.window, image=self.image[-1])
+        self.items[-1]["Icon"].bind("<Button-1>", partial(self._make_item_exp_on, self._idx))
+        self.items[-1]["Icon"].bind("<ButtonRelease-1>", partial(self._make_item_exp_off, self._idx))
         self.items[-1]["Icon"].place(x=self.items[-1]["x"], y=self.items[-1]["y"])
         
     def _make_item_name(self):
@@ -122,26 +124,33 @@ class mainGUI:
                                         font=self.font_search_item_name)
         self.items[-1]["Name"].place(x=self.items[-1]["x"] + 80, y=self.items[-1]["y"] + 20)
 
-    def _make_item_expl_on(self, idx):
+    def _make_item_exp_on(self, idx, event):
 
-        show = self.items[-1]["Info"]
-        self.items[idx]["expl"] = Label
+        text = str()
+        
+        for i in range(1, len(self.items[idx]["Info"])):
+            text += self.items[idx]["Info"][i]
+            text += '\n'
 
-    def _make_item_expl_on(self, idx):
-        self.items[idx]["expl"].destroy()
+        self.items[idx]["Exp"] = Label(self.window, text=text, font=self.font_search_item_name)
+        self.items[idx]["Exp"].place(x=self.items[idx]["x"] + 80, y=self.items[idx]["y"] + 20)
 
-    def _delete_item(self):
+    def _make_item_exp_off(self, idx, event):
+        self.items[idx]["Exp"].destroy()
+
+    def _delete_items(self):
         for item in self.items:
             for key, obj in item.items():
                 if hasattr(obj, 'destroy'):
                     obj.destroy()
         self.items = []
 
-    def _make_item(self, name):
+    def _make_item(self,name):
         self.image = []
 
         # item delete
-        self._delete_item()
+        self._delete_items()
+        self._idx = 0
 
         # API init
         new_API = APIprocess.Get_char_json(name)
@@ -154,6 +163,7 @@ class mainGUI:
             self.items[-1]["y"] = y
             self._make_item_icon()
             self._make_item_name()
+            self._idx += 1
 
 
         _make_item_each(new_API.GetplayerWeaponinfo,\
