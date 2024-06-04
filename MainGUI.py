@@ -30,12 +30,10 @@ OPTION_SIZE_Y = 3
 SEARCH_ENTRY_X = 300
 SEARCH_ENTRY_Y = 100
 
-
 SEARCH_ITEM1_X = 350
 SEARCH_ITEM2_X = 800
 SEARCH_ITEM_Y = 140
 SEARCH_ITEM_DIFF = 120
-
 
 class mainGUI:
     def __init__(self):
@@ -53,7 +51,7 @@ class mainGUI:
 
     def make_fonts(self):
         self.font_option = font.Font(self.window, size=20, family='맑은 고딕', weight="bold")
-        self.font_search_entry = font.Font(self.window, size=20, family='맑은 고딕', weight="bold")
+        self.font_search_entry = self.font_option
         self.font_search_item_name = font.Font(self.window, size=14, family='맑은 고딕')
 
     def make_ui(self):
@@ -109,8 +107,10 @@ class mainGUI:
         self.option = "Goal"
 
         self.objects.append(Label(self.window, text="Goal: ", font=self.font_search_entry))
-        self.goal = self.objects[-1]
-        self.goal.place(x=800,y=875)
+        self.goal_label = self.objects[-1]
+        self.goal_label.place(x=800,y=875)
+
+        self.goal_entry = None
 
         self._make_search_entry()
 
@@ -129,17 +129,17 @@ class mainGUI:
 
     def _make_search_entry(self):
         self.objects.append(Entry(self.window, font=self.font_search_entry))
-        self.objects[-1].bind("<Return>", self._search_start_func)
+        self.objects[-1].bind("<Return>", self._do_search)
         self.objects[-1].place(x=500, y=50)
         self.entry = self.objects[-1]
 
-        self.objects.append(Button(self.window, width=10, height=5, command=self._search_start_func))
+        self.objects.append(Button(self.window, width=10, height=5, command=self._do_search))
         self.objects[-1].place(x=850, y=30)
         self.entry_button = self.objects[-1]
 
         self.items = []
 
-    def _search_start_func(self, event=None):
+    def _do_search(self, event=None):
         name = str(self.entry.get())
         if not name:
             return
@@ -179,6 +179,10 @@ class mainGUI:
                        SEARCH_ITEM1_X, SEARCH_ITEM_Y + 4 * SEARCH_ITEM_DIFF)
         _make_item_each(new_API.GetplayerWeaponinfo,\
                        SEARCH_ITEM1_X, SEARCH_ITEM_Y + 5 * SEARCH_ITEM_DIFF)
+        
+        if self.option == "Goal":
+            return
+
         _make_item_each(new_API.GetplayerBraceletinfo,\
                        SEARCH_ITEM1_X, SEARCH_ITEM_Y + 6 * SEARCH_ITEM_DIFF)
         
@@ -206,7 +210,7 @@ class mainGUI:
             self.items[-1]["Icon"].bind("<Button-1>", partial(self._item_exp_on, self._idx))
             self.items[-1]["Icon"].bind("<ButtonRelease-1>", partial(self._item_exp_off, self._idx))
         else:
-            self.items[-1]["Icon"].configure(command=partial(self._item_set_goal, self._idx))
+            self.items[-1]["Icon"].bind("<ButtonRelease-1>", partial(self._item_set_goal, self._idx))
 
         self.items[-1]["Icon"].place(x=self.items[-1]["x"], y=self.items[-1]["y"])
 
@@ -229,9 +233,24 @@ class mainGUI:
     def _item_exp_off(self, idx, event):
         self.items[idx]["Exp"].destroy()
 
-    def _item_set_goal(self, idx):
-        goal_api = Neededgold.Neededgold(self.items[idx]["Info"], 24)
-        print(goal_api.Output())
+    def _item_set_goal(self, idx, event):
+
+        if self.goal_entry != None:
+            self.goal_entry.destroy()
+            self.objects.pop()
+
+        self.objects.append(Entry(self.window, font=self.font_search_entry, width=3))
+        self.objects[-1].bind("<Return>", partial(self._item_show_goal, idx))
+        self.objects[-1].place(x=event.x + self.items[idx]["x"] + 10,\
+                               y=event.y + self.items[idx]["y"] + 10)
+        self.goal_entry = self.objects[-1]
+
+    def _item_show_goal(self, idx, event):
+        goal_api = Neededgold.Neededgold(self.items[idx]["Info"], int(self.goal_entry.get()))
+        self.goal_label.configure(text="Goal: "+ str(goal_api.Output()))
+        self.goal_entry.destroy()
+        self.goal_entry = None
+        self.objects.pop()
 
     def _make_item_name(self):
         self.items[-1]["Name"] = Label(self.window,  text=self.items[-1]["Info"][2],\
