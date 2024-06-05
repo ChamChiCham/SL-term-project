@@ -10,6 +10,8 @@ from PIL import Image,ImageTk
 
 import APIprocess
 import Neededgold
+from SearchDir import searchDir
+import fileDuplicator
 
 OPTION1_X = 50
 OPTION2_X = OPTION1_X
@@ -44,7 +46,7 @@ class mainGUI:
 
         self.make_fonts()        
         self.make_ui()
-        
+
         self.objects = []
         self.option = "None"
         self.window.mainloop()
@@ -53,6 +55,7 @@ class mainGUI:
         self.font_option = font.Font(self.window, size=20, family='맑은 고딕', weight="bold")
         self.font_search_entry = self.font_option
         self.font_search_item_name = font.Font(self.window, size=14, family='맑은 고딕')
+        self.font_history = font.Font(self.window, size=24, family='맑은 고딕', weight="bold")
 
     def make_ui(self):
         self.option_search = Button(self.window, text="유저 검색",\
@@ -100,7 +103,6 @@ class mainGUI:
 
         self._make_search_entry()
 
-
     def option_goal_func(self):
         # clear objects
         self.clear_objects()
@@ -121,6 +123,17 @@ class mainGUI:
     def option_history_func(self):
         self.clear_objects()
         self.option = "History"
+
+        text = "검색기록\n\n"
+        duplicator = []
+        duplicator = fileDuplicator.fileDuplicator().getHistory()
+        print(duplicator)
+        for s in duplicator:
+            text += s
+        text = text[:-1]
+
+        self.objects.append(Label(self.window, text=text, font=self.font_history))
+        self.objects[-1].place(x=600, y=50)
 
     def option_popup_func(self):
         self.clear_objects()

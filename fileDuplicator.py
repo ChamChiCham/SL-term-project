@@ -1,6 +1,6 @@
 class fileDuplicator:
-    history = []
     def __init__(self):
+        self.history = []
         file_obj = open("user_name.txt", 'r')
         while True:
             line = file_obj.readline()
