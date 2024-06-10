@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import font
 from winsound import *
 from functools import partial
-
+import alram
 from io import BytesIO
 import urllib
 import urllib.request
