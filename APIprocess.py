@@ -17,8 +17,10 @@ class Get_char_json:
 
     char_name = ""
     response = ""
+    response2 = ""
     headers = {}
     jsonObject = ""
+    jsonObject2 = ""
     returnList = []
 
     #닉네임으로 초기화 작업 실행
@@ -50,8 +52,13 @@ class Get_char_json:
         # 10 - 반지2
         # 11 - 어빌리티스톤
         # 12 - 팔찌
+        url2 = 'https://developer-lostark.game.onstove.com/armories/characters/' + self.char_name + "/profiles"
 
+        self.response2 = requests.get(url2, headers=self.headers)
+        self.jsonObject2 = self.response2.json()
 # ---------------------- 장비 ----------------------------------------
+    def GetplayerLevel(self):
+        return self.jsonObject2["ItemAvgLevel"]
 
     def GetplayerWeaponinfo(self):
 
@@ -385,3 +392,8 @@ class Get_char_json:
         # Element_006여기부터 Element_000에 각인하나 001에 각인 하나 있음 이거 찾아야함
 
         return Braceletinfo
+
+
+a = Get_char_json("넹븝")
+a.getAmorizes()
+print(a.GetplayerLevel())
