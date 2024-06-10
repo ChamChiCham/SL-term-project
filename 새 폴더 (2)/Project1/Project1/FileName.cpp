@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <string>
 #include <codecvt>
+#include <format>
 #include <atlconv.h>
 
 
@@ -24,6 +25,33 @@
 SQLHENV henv;
 SQLHDBC hdbc;
 SQLHSTMT hstmt;
+
+/************************************************************************
+/* HandleDiagnosticRecord : display error/warning information
+/*
+/* Parameters:
+/*     hHandle    ODBC handle
+/*     hType      Type of handle (SQL_HANDLE_STMT, SQL_HANDLE_ENV, SQL_HANDLE_DBC)
+/*     RetCode    Return code of failing command
+/************************************************************************/
+void display_error(SQLHANDLE hHandle, SQLSMALLINT hType, RETCODE RetCode)
+{
+	SQLSMALLINT iRec = 0;
+	SQLINTEGER  iError;
+	WCHAR      wszMessage[1000];
+	WCHAR      wszState[SQL_SQLSTATE_SIZE + 1];
+	if (RetCode == SQL_INVALID_HANDLE) {
+		fwprintf(stderr, L"Invalid handle!\n");
+		return;
+	}
+	while (SQLGetDiagRec(hType, hHandle, ++iRec, wszState, &iError, wszMessage,
+		(SQLSMALLINT)(sizeof(wszMessage) / sizeof(WCHAR)), (SQLSMALLINT*)NULL) == SQL_SUCCESS) {
+		// Hide data truncated..
+		if (wcsncmp(wszState, L"01004", 5)) {
+			fwprintf(stderr, L"[%5.5s] %s (%d)\n", wszState, wszMessage, iError);
+		}
+	}
+}
 
 
 bool connect_database()
@@ -85,7 +113,8 @@ constexpr char SC_GIVE = 2;
 struct CS_WRITE_PACKET {
 	unsigned char size;
 	char	type;
-	char	mess[NAME_SIZE];
+	char	name[NAME_SIZE];
+	float	level;
 };
 
 struct CS_READ_PACKET {
@@ -96,7 +125,7 @@ struct CS_READ_PACKET {
 struct SC_GIVE_PACKET {
 	unsigned char size;
 	char	type;
-	char	mess[NAME_SIZE][10];
+	char	name[10][NAME_SIZE];
 };
 #pragma pack (pop)
 
@@ -186,15 +215,12 @@ void process_packet(size_t c_id, char* packet)
 	case CS_WRITE: {
 		std::cout << "cs_write" << std::endl;
 		CS_WRITE_PACKET* p = reinterpret_cast<CS_WRITE_PACKET*>(packet);
-		std::cout << p->mess << std::endl;
-		std::wstring exec{
-			L"INSERT IGNORE INTO user_table (user_name) VALUES "
-		};
-		std::string str{p->mess};
-		std::wstring wstr;
+		
+		std::string str{ p->name };
 		USES_CONVERSION;
-		wstr = std::wstring(A2W(str.c_str()));
-		exec += L"(\"" + wstr + L"\")";
+		std::wstring wstr = std::wstring(A2W(str.c_str()));
+
+		std::wstring exec{std::format(L"EXEC update_user @Param1 = '{}', @Param2 = {}", wstr, p->level)};
 		std::wcout << exec << std::endl;
 
 
@@ -207,6 +233,7 @@ void process_packet(size_t c_id, char* packet)
 			}
 			else {
 				std::cout << "Failed to insert data." << std::endl;
+				display_error(hstmt, SQL_HANDLE_STMT, retcode);
 			}
 			// statement 핸들 해제
 			SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
@@ -218,6 +245,64 @@ void process_packet(size_t c_id, char* packet)
 	}
 	case CS_READ: {
 		std::cout << "cs_read" << std::endl;
+
+		int retcode = SQLAllocHandle(SQL_HANDLE_STMT, hdbc, &hstmt);
+		if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO) {
+
+			SQLVARCHAR name[NAME_SIZE]{};
+			SQLREAL level{};
+			std::string read_names[10];
+
+			// SQL 문장 실행
+			retcode = SQLExecDirect(hstmt, (SQLWCHAR*)L"EXEC get_user", SQL_NTS);
+			if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO) {
+				std::cout << "Data Select successfully." << std::endl;
+				SQLLEN cbName = 0, cbLevel = 0;
+				retcode = SQLBindCol(hstmt, 1, SQL_C_CHAR, name, 36, &cbName);
+				retcode = SQLBindCol(hstmt, 2, SQL_C_FLOAT, &level, 20, &cbName);
+				int idx = 0;
+				while (true)
+				{
+					retcode = SQLFetch(hstmt);
+
+					if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
+					{
+						std::cout << name << '\t' << level << std::endl;
+						read_names[idx++] = reinterpret_cast<char*>(name);
+					}
+
+					else if (retcode == SQL_ERROR || retcode == SQL_SUCCESS_WITH_INFO)
+					{
+						display_error(hstmt, SQL_HANDLE_STMT, retcode);
+						break;
+					}
+
+					else if (retcode == SQL_NO_DATA)
+					{
+						SQLCloseCursor(hstmt);
+						break;
+					}
+				}
+			}
+			else {
+				std::cout << "Failed to select data." << std::endl;
+				display_error(hstmt, SQL_HANDLE_STMT, retcode);
+			}
+			// statement 핸들 해제
+			SQLFreeHandle(SQL_HANDLE_STMT, hstmt);
+
+			SC_GIVE_PACKET rp;
+			rp.type = SC_GIVE;
+			rp.size = sizeof(rp);
+			for (int i = 0; i < 10; ++i) {
+				strcpy_s(rp.name[i], NAME_SIZE, read_names[i].c_str());
+			}
+			clients[c_id].do_send(&rp);
+		}
+		else {
+			std::cout << "Failed to allocate a statement handle." << std::endl;
+		}
+
 		break;
 	}
 	}

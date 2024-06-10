@@ -1,3 +1,5 @@
+#include "python.h"
+
 #include <iostream>
 
 #include <WS2tcpip.h>
@@ -99,8 +101,7 @@ struct SC_GIVE_PACKET {
 
 SESSION session;
 
-
-int main()
+void init()
 {
 	std::wcout.imbue(std::locale("korean"));
 	WSADATA WSAData;
@@ -114,34 +115,54 @@ int main()
 	connect(s_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
 	session._socket = s_socket;
 
-	int a;
-	std::cin >> a;
+}
 
-	if (a == 0) {
-		CS_WRITE_PACKET p;
-		p.type = CS_WRITE;
-		p.size = sizeof(p);
-		strcpy_s(p.name, NAME_SIZE, "원더호이도화가");
-		p.level = 1540.f;
-		session.do_send(&p);
-	}
-	else {
-		CS_READ_PACKET p;
-		p.type = CS_READ;
-		p.size = sizeof(p);
-		session.do_send(&p);
-		session.do_recv();
-		
-		SC_GIVE_PACKET* rp = reinterpret_cast<SC_GIVE_PACKET*>(session._recv_over._send_buf);
-		
-		for (int i = 0; i < 10; ++i) {
-			std::cout << rp->name[i] << std::endl;
-		}
-	}
-		
-	
-	
+static PyObject *
 
-	closesocket(s_socket);
+write_name(PyObject *self, PyObject *args)
+{
+	init();
+	CS_WRITE_PACKET p;
+	p.type = CS_WRITE;
+	p.size = sizeof(p);
+	strcpy_s(p.name, NAME_SIZE, "TKadkcl2");
+	p.level = 1540.f;
+	session.do_send(&p);
+
+	closesocket(session._socket);
 	WSACleanup();
+
+	return Py_BuildValue("b", len);
+}
+
+static PyObject*
+
+get_name(PyObject* self, PyObject* args)
+{
+	init();
+}
+
+static PyMethodDef SpamMethods[] = {
+	{ "write", write_name, METH_VARARGS,
+	"count a string length." },
+	{ NULL, NULL, 0, NULL } // 배열의 끝을 나타냅니다.
+};
+
+static PyMethodDef SpamMethods1[] = {
+	{ "get", get_name, METH_VARARGS,
+	"count a string length." },
+	{ NULL, NULL, 0, NULL } // 배열의 끝을 나타냅니다.
+};
+
+static struct PyModuleDef spammodule = {
+	PyModuleDef_HEAD_INIT,
+	"spam",            // 모듈 이름
+	"It is test module.", // 모듈 설명을 적는 부분, 모듈의 __doc__에 저장됩니다.
+	-1,SpamMethods
+};
+
+PyMODINIT_FUNC
+PyInit_spam(void)
+{
+	return PyModule_Create(&spammodule);
 }
