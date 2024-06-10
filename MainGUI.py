@@ -37,16 +37,16 @@ SEARCH_ITEM2_X = 800
 SEARCH_ITEM_Y = 140
 SEARCH_ITEM_DIFF = 120
 
+
 class mainGUI:
     def __init__(self):
         self.window = Tk()
         self.window.title("너, 로아 열심히 하고 있니?")
         self.window.geometry("1280x960")
-        self.window.configure(bg="green")
+        self.window.configure(bg="black")
 
         self.make_fonts()        
         self.make_ui()
-
         self.objects = []
         self.option = "None"
         self.window.mainloop()
@@ -118,7 +118,9 @@ class mainGUI:
 
     def option_todo_func(self):
         self.clear_objects()
+
         self.option = "Todo"
+        self.objects.append(Button(self.window, width = 10, height = 5,command =))
 
     def option_history_func(self):
         self.clear_objects()

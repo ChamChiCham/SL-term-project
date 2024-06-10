@@ -17,6 +17,7 @@ bot.getMe()
 #       scheduleReset은 자동으로 일정 시간마다 실행되는 함수 << 이건 잘 되는지 모름
 #
 #######################################################################
+
 class time_job:
     Guradian = False
     Chaos = False
@@ -75,3 +76,4 @@ class time_job:
 
     def getEpona(self):
         return self.Epona
+
