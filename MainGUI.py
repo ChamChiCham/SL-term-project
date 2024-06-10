@@ -37,16 +37,16 @@ SEARCH_ITEM2_X = 800
 SEARCH_ITEM_Y = 140
 SEARCH_ITEM_DIFF = 120
 
+
 class mainGUI:
     def __init__(self):
         self.window = Tk()
         self.window.title("너, 로아 열심히 하고 있니?")
         self.window.geometry("1280x960")
-        self.window.configure(bg="green")
+        self.window.configure(bg="black")
 
         self.make_fonts()        
         self.make_ui()
-
         self.objects = []
         self.option = "None"
         self.window.mainloop()
@@ -119,6 +119,44 @@ class mainGUI:
     def option_todo_func(self):
         self.clear_objects()
         self.option = "Todo"
+        self.objects.append(Entry(self.window, font=self.font_search_entry))
+        userid = ""
+        self.objects[0].bind("<Return>", userid)
+        _tj = alram.time_job(user_id = userid)
+        self.objects.append(Button(self.window, width=10, height=5, command=_tj.setChaos_toggle()))
+        self.objects.append(Button(self.window, width=10, height=5, command=_tj.setEpona_toggle()))
+        self.objects.append(Button(self.window, width=10, height=5, command=_tj.setGuradian_toggle()))
+
+        self.objects[0].place(x=600, y=50)
+        self.objects[1].place(x=400, y=200)
+        self.objects[2].place(x=600, y=200)
+        self.objects[3].place(x=800, y=200)
+
+        _tj_Ctext = ""
+        _tj_Etext = ""
+        _tj_Gtext = ""
+
+        if _tj.getChaos() == False:
+            _tj_Ctext = "X"
+        else:
+            _tj_Ctext = "O"
+
+        if _tj.getEpona() == False:
+            _tj_Etext = "X"
+        else:
+            _tj_Etext = "O"
+
+        if _tj.getGuradian() == False:
+            _tj_Gtext = "X"
+        else:
+            _tj_Gtext = "O"
+
+        self.objects.append(Label(self.window, text=_tj_Ctext, font=self.font_search_entry))
+        self.objects.append(Label(self.window, text=_tj_Etext, font=self.font_search_entry))
+        self.objects.append(Label(self.window, text=_tj_Gtext, font=self.font_search_entry))
+        self.objects[4].place(x=400, y=400)
+        self.objects[5].place(x=600, y=400)
+        self.objects[6].place(x=800, y=400)
 
     def option_history_func(self):
         self.clear_objects()
