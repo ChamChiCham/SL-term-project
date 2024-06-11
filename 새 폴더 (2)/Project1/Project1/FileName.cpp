@@ -257,6 +257,7 @@ void process_packet(size_t c_id, char* packet)
 
 			// SQL 문장 실행
 			retcode = SQLExecDirect(hstmt, (SQLWCHAR*)L"EXEC get_user", SQL_NTS);
+			std::wcout << L"EXEC get_user" << std::endl;
 			if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO) {
 				std::cout << "Data Select successfully." << std::endl;
 				SQLLEN cbName = 0, cbLevel = 0;
@@ -269,7 +270,7 @@ void process_packet(size_t c_id, char* packet)
 
 					if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
 					{
-						std::cout << name << '\t' << level << std::endl;
+						std::cout << name << std::endl;
 						read_names[idx++] = reinterpret_cast<char*>(name);
 					}
 
@@ -375,6 +376,8 @@ int main()
 			clients[client_id]._socket = g_c_socket;
 			clients[client_id]._id = client_id;
 			clients[client_id].do_recv();
+
+			std::cout << "Accept Success [" << client_id << "]\n";
 
 			g_c_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 			ZeroMemory(&g_a_over._over, sizeof(g_a_over._over));

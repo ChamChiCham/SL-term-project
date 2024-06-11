@@ -21,7 +21,7 @@ constexpr int NAME_SIZE = 36;
 constexpr char CS_WRITE = 0;
 constexpr char CS_READ = 1;
 constexpr char SC_GIVE = 2;
-constexpr const char* SERVER_ADDR = "125.190.105.174";
+constexpr const char* SERVER_ADDR = "127.0.0.1";
 
 enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND };
 
@@ -104,7 +104,7 @@ struct SC_GIVE_PACKET {
 
 SESSION session;
 
-void init()
+bool init()
 {
 	std::wcout.imbue(std::locale("korean"));
 	WSADATA WSAData;
@@ -115,8 +115,12 @@ void init()
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(PORT_NUM);
 	inet_pton(AF_INET, SERVER_ADDR, &server_addr.sin_addr);
-	connect(s_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
+	int res = connect(s_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
+	if (0 != res) {
+		return false;
+	}
 	session._socket = s_socket;
+	return true;
 
 }
 
@@ -124,7 +128,12 @@ static PyObject *
 
 write_name(PyObject *self, PyObject *args)
 {
-	init();
+	if (not init()) {
+		closesocket(session._socket);
+		WSACleanup();
+		return Py_BuildValue("b", 0);
+	}
+
 
 	CS_WRITE_PACKET p;
 	p.type = CS_WRITE;
@@ -152,7 +161,11 @@ static PyObject*
 
 get_name(PyObject* self, PyObject* args)
 {
-	init();
+	if (not init()) {
+		closesocket(session._socket);
+		WSACleanup();
+		return Py_BuildValue("b", 0);
+	}
 
 	CS_READ_PACKET p;
 	p.type = CS_READ;

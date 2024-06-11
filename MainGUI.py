@@ -270,7 +270,6 @@ class mainGUI:
             x1 += x_diff
             x2 += x_diff
         
-
     def _make_item(self,name):
         self.image = []
 
