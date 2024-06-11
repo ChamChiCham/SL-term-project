@@ -9,6 +9,10 @@
 #include <windows.h>  
 #include <sqlext.h>
 
+
+void print_error(const char* msg, int err_no);
+
+
 constexpr int PORT_NUM = 4000;
 constexpr int BUF_SIZE = 512;
 constexpr int NAME_SIZE = 36;
@@ -16,7 +20,7 @@ constexpr int NAME_SIZE = 36;
 constexpr char CS_WRITE = 0;
 constexpr char CS_READ = 1;
 constexpr char SC_GIVE = 2;
-constexpr const char* SERVER_ADDR = "127.0.0.1";
+constexpr const char* SERVER_ADDR = "125.190.105.174";
 
 enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND };
 
@@ -111,7 +115,10 @@ int main()
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(PORT_NUM);
 	inet_pton(AF_INET, SERVER_ADDR, &server_addr.sin_addr);
-	connect(s_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
+	int res = connect(s_socket, reinterpret_cast<sockaddr*>(&server_addr), sizeof(server_addr));
+	if (0 != res) {
+		print_error("connect", WSAGetLastError());
+	}
 	session._socket = s_socket;
 
 	int a;
@@ -121,8 +128,8 @@ int main()
 		CS_WRITE_PACKET p;
 		p.type = CS_WRITE;
 		p.size = sizeof(p);
-		strcpy_s(p.name, NAME_SIZE, "원더호이도화가");
-		p.level = 1540.f;
+		strcpy_s(p.name, NAME_SIZE, "Tkaan2");
+		p.level = 1200.f;
 		session.do_send(&p);
 	}
 	else {
@@ -144,4 +151,19 @@ int main()
 
 	closesocket(s_socket);
 	WSACleanup();
+}
+
+
+
+void print_error(const char* msg, int err_no)
+{
+	WCHAR* msg_buf;
+	FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
+		NULL, err_no,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		reinterpret_cast<LPWSTR>(&msg_buf), 0, NULL);
+	std::cout << msg;
+	std::wcout << L" : 에러 : " << msg_buf;
+	while (true);
+	LocalFree(msg_buf);
 }
