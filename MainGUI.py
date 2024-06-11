@@ -1,5 +1,3 @@
-# database sentence 231 287 323
-
 import tkinter
 from tkinter import *
 from tkinter import font
@@ -235,7 +233,9 @@ class mainGUI:
         self.option = "Database"
 
         text = "\n"
-        # text = self._get_database()
+
+        # DATABASE
+        text = self._get_database()
 
         self.objects.append(Label(self.window, text=text, font=self.font_history))
         self.objects[-1].place(x=550, y=200)
@@ -291,7 +291,8 @@ class mainGUI:
         new_API = APIprocess.Get_char_json(name)
         new_API.getAmorizes()
         
-        # self._write_database(name, new_API.GetplayerLevel())
+        # DATABASE
+        self._write_database(name, new_API.GetplayerLevel())
 
         self.graph.delete("all")
         data = []
@@ -326,8 +327,8 @@ class mainGUI:
         new_API = APIprocess.Get_char_json(name)
         new_API.getAmorizes()
 
-        # TRY write database
-        # self._write_database(name, new_API.GetplayerLevel())
+        # DATABASE
+        self._write_database(name, new_API.GetplayerLevel())
 
         def _make_item_each(func, x, y):
             self.items.append({})
