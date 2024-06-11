@@ -28,7 +28,7 @@ class time_job:
 
     #### 메일 보내는 부분 ####
     def sendMail(self,sender_add):
-        s.sendmail("yungjun0319@gmail.com", sender_add, "너 로아 하고 있니에 오신걸 환영합니다!")
+        s.sendmail("yungjun0319@gmail.com", "yungjun0319@gmail.com", "welcome to lostark")
 
     ##### 텔레그램 봇 알람 보내는 부분 ######
     def sendAlarm(self):
@@ -46,9 +46,8 @@ class time_job:
         self.Epona = False
 
     def scheduleReset(self):
-        schedule.every().day.at("00:00").do(self.send_alarm)
-        schedule.every().day.at("00:00").do(self.reset_alarm_data())
-        schedule.every().day.at("00:00").do(self.sendAlarm())
+        schedule.every().day.at("00:00").do(self.sendAlarm)
+        schedule.every().day.at("00:00").do(self.resetAlarmdata)
 
     def setGuradian_toggle(self):
         if self.Guradian == True:

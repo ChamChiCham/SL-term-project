@@ -12,7 +12,8 @@ import xml.etree.ElementTree as ET
 
 class Googlemap:
     fastfoods = []
-
+    map_url = ""
+    response = ""
     def __init__(self):
         api_key = "3b478912fd61494d95b72f2a6710c706"
         url = "https://openapi.gg.go.kr/Genrestrtfastfood?"
@@ -36,6 +37,30 @@ class Googlemap:
                     "lng": item.findtext("REFINE_WGS84_LOGT")
                 }
                 self.fastfoods.append(fastfood)
+        zoom = 13
+
+        Google_API_Key = 'AIzaSyCzFgc9OGnXckq1-JNhSCVGo9zIq1kSWcE'
+        center_lat = (self.fastfoods[0]['lat'])
+        center_lng = (self.fastfoods[0]['lng'])
+        self.map_url = f"https://maps.googleapis.com/maps/api/staticmap?center={center_lat},{center_lng}&zoom={zoom}&size=400x400&maptype=roadmap"
+
+        marker_urls = ""
+        for fastfood in self.fastfoods:
+            if fastfood['lat'] and fastfood['lng']:
+                lat, lng = float(fastfood['lat']), float(fastfood['lng'])
+                marker_urls += f"&markers=color:red%7C{lat},{lng}"
+
+        self.map_url += marker_urls
+        self.map_url += '&key=' + Google_API_Key
+
+        self.response = requests.get(self.map_url+'&key='+Google_API_Key)
 
     def getLocationData(self):
         return self.fastfoods
+
+    def getMapUrl(self):
+        return self.map_url
+
+    def getResponse(self):
+        return self.response
+
