@@ -1,3 +1,5 @@
+# database sentence 231 287 323
+
 import tkinter
 from tkinter import *
 from tkinter import font
@@ -16,6 +18,8 @@ import fileDuplicator
 from PIL import Image, ImageTk
 import io
 import requests
+import spam
+import re
 
 OPTION_X = 50
 OPTION_Y_DIFF = 120
@@ -91,7 +95,7 @@ class mainGUI:
                                     font=self.font_option, command=self.option_graph_func)
         self.option_popup.place(x=OPTION_X,y=OPTION6_Y)
 
-        self.option_popup = Button(self.window,text="데베",\
+        self.option_popup = Button(self.window,text="순위",\
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
                                     font=self.font_option, command=self.option_database_func)
         self.option_popup.place(x=OPTION_X,y=OPTION7_Y)
@@ -194,7 +198,7 @@ class mainGUI:
         text = text[:-1]
 
         self.objects.append(Label(self.window, text=text, font=self.font_history))
-        self.objects[-1].place(x=600, y=50)
+        self.objects[-1].place(x=600, y=150)
 
     def option_popup_func(self):
         self.map_image = []
@@ -223,6 +227,12 @@ class mainGUI:
         self.clear_objects()
         self.option = "Database"
 
+        text = "\n"
+        # text = self._get_database()
+
+        self.objects.append(Label(self.window, text=text, font=self.font_history))
+        self.objects[-1].place(x=550, y=200)
+
     def _make_search_entry(self):
         self.objects.append(Entry(self.window, font=self.font_search_entry))
         self.objects[-1].bind("<Return>", self._do_search)
@@ -237,6 +247,7 @@ class mainGUI:
 
     def _do_search(self, event=None):
         name = str(self.entry.get())
+
         if not name:
             return
         if self.option == "Graph":
@@ -244,9 +255,36 @@ class mainGUI:
         else:
             self._make_item(name)
 
+    def _write_database(self, name, level):
+        if not name or not level:
+            return 
+        if re.search('[가-힣]', name) is not None:
+            return
+        
+        level = level.replace(",", "")
+        flevel = float(level)
+        spam.write(name, flevel)
+
+    def _get_database(self):
+        text = "유저 순위\n\n"
+        data = spam.get()
+        print(data)
+        cnt = 1
+        for s in data:
+            if s:
+                new_API = APIprocess.Get_char_json(s)
+                new_API.getAmorizes()
+                level = new_API.GetplayerLevel()
+                text += f"{cnt}위: {s} | {level}\n"
+                cnt += 1
+        text = text[:-1]
+        return text
+
     def _make_graph(self, name):
         new_API = APIprocess.Get_char_json(name)
         new_API.getAmorizes()
+        
+        # self._write_database(name, new_API.GetplayerLevel())
 
         self.graph.delete("all")
         data = []
@@ -280,6 +318,9 @@ class mainGUI:
         # API init
         new_API = APIprocess.Get_char_json(name)
         new_API.getAmorizes()
+
+        # TRY write database
+        # self._write_database(name, new_API.GetplayerLevel())
 
         def _make_item_each(func, x, y):
             self.items.append({})

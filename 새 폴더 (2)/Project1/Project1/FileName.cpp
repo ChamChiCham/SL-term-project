@@ -309,6 +309,7 @@ void process_packet(size_t c_id, char* packet)
 		break;
 	}
 	}
+	std::cout << std::endl;
 }
 
 int main()

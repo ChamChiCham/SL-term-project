@@ -164,7 +164,7 @@ get_name(PyObject* self, PyObject* args)
 	if (not init()) {
 		closesocket(session._socket);
 		WSACleanup();
-		return Py_BuildValue("b", 0);
+		return Py_BuildValue("(s)", "");
 	}
 
 	CS_READ_PACKET p;
