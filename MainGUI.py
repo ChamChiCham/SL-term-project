@@ -196,11 +196,13 @@ class mainGUI:
         self.clear_objects()
         self.option = "Popup"
         gm = Googlemap.Googlemap()
-        res = gm.getResponse()
-        image = Image.open(io.BytesIO(res.content))
-        tk_image = ImageTk.PhotoImage(image)
+        self.url = gm.getMapUrl()
+        #self.url = "https://maps.googleapis.com/maps/api/staticmap?center=37.3719161438,127.1623145413&zoom=13&size=400x400&maptype=roadmap&markers=color:red%7C37.3719161438,127.1623145413&key=AIzaSyCzFgc9OGnXckq1-JNhSCVGo9zIq1kSWcE"
+        self.response = requests.get(self.url)
+        self.images = Image.open(BytesIO(self.response.content))
+        self.tk_image = ImageTk.PhotoImage(self.images)
         # 지도 이미지 라벨 생성
-        self.map_image.append(Label(self.window,image=tk_image))
+        self.map_image.append(Label(self.window,image=self.tk_image))
         self.map_image[0].place(x=600,y=100)
 
     def _make_search_entry(self):

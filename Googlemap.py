@@ -52,10 +52,9 @@ class Googlemap:
 
         self.map_url += marker_urls
         self.map_url += '&key=' + Google_API_Key
+        print(self.map_url)
 
-        self.test = "https://maps.googleapis.com/maps/api/place/details/json?place_id=ChIJ70lL5f4iZDURou4DxhPonPA&fields=name%2Crating%2Cformatted_address%2Creviews&key=AIzaSyCzFgc9OGnXckq1-JNhSCVGo9zIq1kSWcE"
-
-        self.response = requests.get(self.test)
+        self.response = requests.get(self.map_url)
 
     def getLocationData(self):
         return self.fastfoods
@@ -66,3 +65,5 @@ class Googlemap:
     def getResponse(self):
         return self.response
 
+gm = Googlemap()
+print(gm.getMapUrl())
