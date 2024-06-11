@@ -141,7 +141,7 @@ write_name(PyObject *self, PyObject *args)
 	const char* name{};
 	float level;
 
-	if (!PyArg_ParseTuple(args, "sf", &name, &level)) {
+	if (!PyArg_ParseTuple(args, "yf", &name, &level)) {
 		std::cout << "ERROR";
 		return NULL; // 에러가 발생하면 NULL을 반환
 	}
@@ -163,7 +163,7 @@ get_name(PyObject* self, PyObject* args)
 	if (not init()) {
 		closesocket(session._socket);
 		WSACleanup();
-		return Py_BuildValue("(s)", "");
+		return Py_BuildValue("(y)", "");
 	}
 
 	CS_READ_PACKET p;
@@ -177,7 +177,7 @@ get_name(PyObject* self, PyObject* args)
 	closesocket(session._socket);
 	WSACleanup();
 
-	return Py_BuildValue("(sssss)", rp->name[0], rp->name[1], rp->name[2], rp->name[3], rp->name[4]);
+	return Py_BuildValue("(yyyyy)", rp->name[0], rp->name[1], rp->name[2], rp->name[3], rp->name[4]);
 }
 
 static PyMethodDef SpamMethods[] = {

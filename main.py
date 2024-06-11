@@ -61,6 +61,15 @@
 #   3. 골드 리턴
 #--------------------------------- --------------- ---------------------------------------------
 
-from MainGUI import mainGUI
+# from MainGUI import mainGUI
 
-mainGUI()
+# mainGUI()
+
+# import spam
+
+# spam.write("원더호이바드".encode('cp949'), 1000)
+
+# datas = spam.get()
+# for data in datas:
+#     decoded = data.decode('cp949')
+#     print(decoded)

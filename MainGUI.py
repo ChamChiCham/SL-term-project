@@ -293,12 +293,16 @@ class mainGUI:
         
         level = level.replace(",", "")
         flevel = float(level)
-        spam.write(name, flevel)
+        spam.write(name.encode('cp949'), flevel)
 
     def _get_database(self):
         text = "유저 순위\n\n"
-        data = spam.get()
-        print(data)
+
+        cp949_datas = spam.get()
+        data = []
+        for data in cp949_datas:
+            data.append(data.decode('cp949'))
+        
         cnt = 1
         for s in data:
             if s:
