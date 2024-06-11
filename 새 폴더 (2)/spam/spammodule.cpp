@@ -11,6 +11,9 @@
 #include <windows.h>  
 #include <sqlext.h>
 
+#include <locale>
+#include <codecvt>
+
 constexpr int PORT_NUM = 4000;
 constexpr int BUF_SIZE = 512;
 constexpr int NAME_SIZE = 36;
@@ -18,7 +21,7 @@ constexpr int NAME_SIZE = 36;
 constexpr char CS_WRITE = 0;
 constexpr char CS_READ = 1;
 constexpr char SC_GIVE = 2;
-constexpr const char* SERVER_ADDR = "127.0.0.1";
+constexpr const char* SERVER_ADDR = "125.190.105.174";
 
 enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND };
 
@@ -95,7 +98,7 @@ struct CS_READ_PACKET {
 struct SC_GIVE_PACKET {
 	unsigned char size;
 	char	type;
-	char	name[10][NAME_SIZE];
+	char	name[5][NAME_SIZE];
 };
 #pragma pack (pop)
 
@@ -122,17 +125,27 @@ static PyObject *
 write_name(PyObject *self, PyObject *args)
 {
 	init();
+
 	CS_WRITE_PACKET p;
 	p.type = CS_WRITE;
 	p.size = sizeof(p);
-	strcpy_s(p.name, NAME_SIZE, "TKadkcl2");
-	p.level = 1540.f;
+
+	const char* name{};
+	float level;
+
+	if (!PyArg_ParseTuple(args, "sf", &name, &level)) {
+		std::cout << "ERROR";
+		return NULL; // 에러가 발생하면 NULL을 반환
+	}
+
+	strcpy_s(p.name, NAME_SIZE, name);
+	p.level = level;
 	session.do_send(&p);
 
 	closesocket(session._socket);
 	WSACleanup();
 
-	return Py_BuildValue("b", len);
+	return Py_BuildValue("b", 1);
 }
 
 static PyObject*
@@ -140,17 +153,24 @@ static PyObject*
 get_name(PyObject* self, PyObject* args)
 {
 	init();
+
+	CS_READ_PACKET p;
+	p.type = CS_READ;
+	p.size = sizeof(p);
+	session.do_send(&p);
+	session.do_recv();
+
+	SC_GIVE_PACKET* rp = reinterpret_cast<SC_GIVE_PACKET*>(session._recv_over._send_buf);
+
+	closesocket(session._socket);
+	WSACleanup();
+
+	return Py_BuildValue("(sssss)", rp->name[0], rp->name[1], rp->name[2], rp->name[3], rp->name[4]);
 }
 
 static PyMethodDef SpamMethods[] = {
-	{ "write", write_name, METH_VARARGS,
-	"count a string length." },
-	{ NULL, NULL, 0, NULL } // 배열의 끝을 나타냅니다.
-};
-
-static PyMethodDef SpamMethods1[] = {
-	{ "get", get_name, METH_VARARGS,
-	"count a string length." },
+	{ "get", get_name, METH_VARARGS, "count a string length." },
+	{ "write", write_name, METH_VARARGS, "count a string length." },
 	{ NULL, NULL, 0, NULL } // 배열의 끝을 나타냅니다.
 };
 

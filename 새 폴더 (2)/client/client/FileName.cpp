@@ -93,7 +93,7 @@ struct CS_READ_PACKET {
 struct SC_GIVE_PACKET {
 	unsigned char size;
 	char	type;
-	char	name[10][NAME_SIZE];
+	char	name[5][NAME_SIZE];
 };
 #pragma pack (pop)
 
@@ -134,7 +134,7 @@ int main()
 		
 		SC_GIVE_PACKET* rp = reinterpret_cast<SC_GIVE_PACKET*>(session._recv_over._send_buf);
 		
-		for (int i = 0; i < 10; ++i) {
+		for (int i = 0; i < 5; ++i) {
 			std::cout << rp->name[i] << std::endl;
 		}
 	}

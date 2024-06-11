@@ -61,6 +61,12 @@
 #   3. 골드 리턴
 #--------------------------------- --------------- ---------------------------------------------
 
-from MainGUI import mainGUI
+# from MainGUI import mainGUI
 
-mainGUI()
+# mainGUI()
+
+import spam
+
+spam.write("Tkaan2", 1200.5)
+
+print(spam.get())

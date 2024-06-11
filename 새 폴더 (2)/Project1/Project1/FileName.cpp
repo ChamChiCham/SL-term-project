@@ -125,7 +125,7 @@ struct CS_READ_PACKET {
 struct SC_GIVE_PACKET {
 	unsigned char size;
 	char	type;
-	char	name[10][NAME_SIZE];
+	char	name[5][NAME_SIZE];
 };
 #pragma pack (pop)
 
@@ -146,11 +146,11 @@ public:
     }
     OVER_EXP(char* packet)
     {
-        _wsabuf.len = packet[0];
+        _wsabuf.len = (unsigned char)packet[0];
         _wsabuf.buf = _send_buf;
         ZeroMemory(&_over, sizeof(_over));
         _comp_type = OP_SEND;
-        memcpy(_send_buf, packet, packet[0]);
+        memcpy(_send_buf, packet, (unsigned char)packet[0]);
     }
 };
 class SESSION {
@@ -187,6 +187,7 @@ public:
 	void do_send(void* packet)
 	{
 		OVER_EXP* sdata = new OVER_EXP{ reinterpret_cast<char*>(packet) };
+
 		WSASend(_socket, &sdata->_wsabuf, 1, 0, 0, &sdata->_over, 0);
 	}
 };
@@ -217,6 +218,7 @@ void process_packet(size_t c_id, char* packet)
 		CS_WRITE_PACKET* p = reinterpret_cast<CS_WRITE_PACKET*>(packet);
 		
 		std::string str{ p->name };
+		std::cout << str << std::endl;
 		USES_CONVERSION;
 		std::wstring wstr = std::wstring(A2W(str.c_str()));
 
@@ -251,7 +253,7 @@ void process_packet(size_t c_id, char* packet)
 
 			SQLVARCHAR name[NAME_SIZE]{};
 			SQLREAL level{};
-			std::string read_names[10];
+			std::string read_names[5];
 
 			// SQL 문장 실행
 			retcode = SQLExecDirect(hstmt, (SQLWCHAR*)L"EXEC get_user", SQL_NTS);
@@ -294,7 +296,7 @@ void process_packet(size_t c_id, char* packet)
 			SC_GIVE_PACKET rp;
 			rp.type = SC_GIVE;
 			rp.size = sizeof(rp);
-			for (int i = 0; i < 10; ++i) {
+			for (int i = 0; i < 5; ++i) {
 				strcpy_s(rp.name[i], NAME_SIZE, read_names[i].c_str());
 			}
 			clients[c_id].do_send(&rp);
