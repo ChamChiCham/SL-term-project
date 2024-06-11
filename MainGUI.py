@@ -38,6 +38,8 @@ SEARCH_ITEM2_X = 800
 SEARCH_ITEM_Y = 140
 SEARCH_ITEM_DIFF = 120
 
+GRAPH_WIDTH = 800
+GRAPH_HEIGHT = 600
 
 class mainGUI:
     def __init__(self):
@@ -208,14 +210,14 @@ class mainGUI:
 
     def option_graph_func(self):
         self.clear_objects()
+
+        self._make_search_entry()
+
         self.option = "Graph"
 
-        self.objects.append(Canvas(self.window, width=200, height=150, bg="white", bd=2))
-        self.objects[-1].pack()
+        self.objects.append(Canvas(self.window, width=GRAPH_WIDTH, height=GRAPH_HEIGHT, bg="white", bd=2))
+        self.objects[-1].place(x=350,y=200)
         self.graph = self.objects[-1]
-
-        # 가운데를 지나는 파란색 선 그리기
-        self.graph.create_line(0, int(200/2), 100, int(200/2), fill="blue")
     
     def option_database_func(self):
         self.clear_objects()
@@ -237,8 +239,37 @@ class mainGUI:
         name = str(self.entry.get())
         if not name:
             return
+        if self.option == "Graph":
+            self._make_graph(name)
+        else:
+            self._make_item(name)
 
-        self._make_item(name)
+    def _make_graph(self, name):
+        new_API = APIprocess.Get_char_json(name)
+        new_API.getAmorizes()
+
+        self.graph.delete("all")
+        data = []
+
+        data.append(eval(new_API.GetplayerHeadinfo()[3]))
+        data.append(eval(new_API.GetplayerTopinfo()[3]))
+        data.append(eval(new_API.GetplayerUnderinfo()[3]))
+        data.append(eval(new_API.GetplayerHandsinfo()[3]))
+        data.append(eval(new_API.GetplayerPauldronsinfo()[3]))
+        data.append(eval(new_API.GetplayerWeaponinfo()[3]))
+
+        x_diff = GRAPH_WIDTH / len(data)
+        y_diff = GRAPH_HEIGHT / 25
+        x1 = 0
+        x2 = x_diff
+        y1 = GRAPH_HEIGHT
+        for i in data:
+            print(i)
+            y2 = GRAPH_HEIGHT - y_diff * i
+            self.graph.create_rectangle(x1 + 20, y1, x2 - 20, y2, fill="blue")
+            x1 += x_diff
+            x2 += x_diff
+        
 
     def _make_item(self,name):
         self.image = []
@@ -311,15 +342,20 @@ class mainGUI:
     def _item_exp_on(self, idx, event):
 
         text = str()
+        cnt = 0
         for i in range(1, len(self.items[idx]["Info"])):
-            text += self.items[idx]["Info"][i]
+            temp = self.items[idx]["Info"][i]
+            for j in range(50, len(self.items[idx]["Info"][i]), 50):
+                 temp = temp[:j] + '\n' + temp[j:]
+                 cnt += 1
+            text += temp
             if i != len(self.items[idx]["Info"]) - 1:
                 text += '\n'
 
         self.items[idx]["Exp"] = Label(self.window, text=text, font=self.font_search_item_name)
         if idx == 6:
             self.items[idx]["Exp"].place(x=event.x + self.items[idx]["x"],\
-                                         y=event.y + self.items[idx]["y"] - 100)
+                                         y=event.y + self.items[idx]["y"] - (100 + 25 * cnt))
         else:
             self.items[idx]["Exp"].place(x=event.x + self.items[idx]["x"],\
                                          y=event.y + self.items[idx]["y"])
