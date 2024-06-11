@@ -365,7 +365,8 @@ class mainGUI:
             self.graph_labels[-1].place(x=x1 + 265, y= y2 + 150)
         
     def _make_item(self,name):
-        self.image = []
+
+        self._search_image = []
 
         # item delete
         self._delete_items()
@@ -424,8 +425,8 @@ class mainGUI:
         with urllib.request.urlopen(self.items[-1]["Info"][0]) as u:
              raw_data=u.read()
         im=Image.open(BytesIO(raw_data))
-        self.image.append(ImageTk.PhotoImage(im))
-        self.items[-1]["Icon"] = Button(self.window, image=self.image[-1])
+        self._search_image.append(ImageTk.PhotoImage(im))
+        self.items[-1]["Icon"] = Button(self.window, image=self._search_image[-1])
 
         if self.option == "Search":
             self.items[-1]["Icon"].bind("<Button-1>", partial(self._item_exp_on, self._idx))
