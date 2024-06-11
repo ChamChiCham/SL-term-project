@@ -112,7 +112,11 @@ class mainGUI:
             case "Search":
                 self._delete_items()
             case "Goal":
-                self._delete_items()   
+                self._delete_items()
+            case "Graph":
+                self._delete_items()
+                for label in self.graph_labels:
+                    label.destroy()
             case _:
                 pass
 
@@ -224,8 +228,10 @@ class mainGUI:
 
         self.option = "Graph"
 
+        self.graph_labels = []
+        
         self.objects.append(Canvas(self.window, width=GRAPH_WIDTH, height=GRAPH_HEIGHT, bg="white", bd=2))
-        self.objects[-1].place(x=350,y=200)
+        self.objects[-1].place(x=350, y=200)
         self.graph = self.objects[-1]
     
     def option_database_func(self):
@@ -294,27 +300,52 @@ class mainGUI:
         # DATABASE
         self._write_database(name, new_API.GetplayerLevel())
 
-        self.graph.delete("all")
-        data = []
 
-        data.append(eval(new_API.GetplayerHeadinfo()[3]))
-        data.append(eval(new_API.GetplayerTopinfo()[3]))
-        data.append(eval(new_API.GetplayerUnderinfo()[3]))
-        data.append(eval(new_API.GetplayerHandsinfo()[3]))
-        data.append(eval(new_API.GetplayerPauldronsinfo()[3]))
-        data.append(eval(new_API.GetplayerWeaponinfo()[3]))
+        self._delete_items()
+        self._idx = 0
+
+        def _make_item_each(func, x, y):
+            self.items.append({})
+            self.items[-1]["Info"] = func()
+            self.items[-1]["x"] = x
+            self.items[-1]["y"] = y
+            self._make_item_icon()
+            self._idx += 1
+
+        self.graph.delete("all")
+
+        func = []
+        func.append(new_API.GetplayerHeadinfo)
+        func.append(new_API.GetplayerTopinfo)
+        func.append(new_API.GetplayerUnderinfo)
+        func.append(new_API.GetplayerHandsinfo)
+        func.append(new_API.GetplayerPauldronsinfo)
+        func.append(new_API.GetplayerWeaponinfo)
+        
+        data = []
+        for i in range(6):
+            data.append(eval(func[i]()[3]))
+
 
         x_diff = GRAPH_WIDTH / len(data)
         y_diff = GRAPH_HEIGHT / 25
         x1 = 0
         x2 = x_diff
         y1 = GRAPH_HEIGHT
+
+
+        for label in self.graph_labels:
+            label.destroy()
+        self.graph_labels = []
+
         for i in data:
-            print(i)
             y2 = GRAPH_HEIGHT - y_diff * i
             self.graph.create_rectangle(x1 + 20, y1, x2 - 20, y2, fill="blue")
             x1 += x_diff
             x2 += x_diff
+            _make_item_each(func[self._idx], x1 + 350 - 100, y1 + 220)
+            self.graph_labels.append(Label(self.window, text=str(i), font=self.font_option, bg="white"))
+            self.graph_labels[-1].place(x=x1 + 265, y= y2 + 150)
         
     def _make_item(self,name):
         self.image = []
