@@ -110,13 +110,15 @@ class mainGUI:
             object.destroy()
         self.objects = []
 
+
         match self.option:
             case "Search":
                 self._delete_items()
             case "Goal":
                 self._delete_items()   
-            case _:
-                pass
+            case "Popup":
+                self.map_image[0].destroy()
+                self.label.destroy()
 
     def option_search_func(self):
         # clear objects
@@ -207,6 +209,7 @@ class mainGUI:
 
     def option_popup_func(self):
         self.map_image = []
+        self.mokoko_image =[]
         self.clear_objects()
         self.option = "Popup"
         gm = Googlemap.Googlemap()
@@ -214,10 +217,22 @@ class mainGUI:
         #self.url = "https://maps.googleapis.com/maps/api/staticmap?center=37.3719161438,127.1623145413&zoom=13&size=400x400&maptype=roadmap&markers=color:red%7C37.3719161438,127.1623145413&key=AIzaSyCzFgc9OGnXckq1-JNhSCVGo9zIq1kSWcE"
         self.response = requests.get(self.url)
         self.images = Image.open(BytesIO(self.response.content))
+        self.immokoko=Image.open(("mokoko_background.png"))
+        self.mokoko_image.append(ImageTk.PhotoImage(self.immokoko))
+        self.label = Label(self.window, image = self.mokoko_image[0])
+        self.label.place(x=400,y=100)
         self.tk_image = ImageTk.PhotoImage(self.images)
         # 지도 이미지 라벨 생성
         self.map_image.append(Label(self.window,image=self.tk_image))
-        self.map_image[0].place(x=600,y=100)
+        self.map_image[0].place(x=550,y=400)
+        self.namelist = gm.getName()
+        self.address = gm.getAddress()
+        self.objects.append(Label(self.window,text = "모코코 팝업 프랭크 버거", font = self.font_history))
+        self.objects.append(Label(self.window,text = self.namelist[0],font = self.font_option))
+        self.objects.append(Label(self.window,text = "주소 : " + self.address,font = self.font_option))
+        self.objects[0].place(x=570,y=120)
+        self.objects[1].place(x=580,y=360)
+        self.objects[2].place(x=450,y=800)
 
     def option_graph_func(self):
         self.clear_objects()
