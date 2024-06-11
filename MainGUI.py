@@ -16,21 +16,19 @@ import fileDuplicator
 from PIL import Image, ImageTk
 import io
 import requests
-OPTION1_X = 50
-OPTION2_X = OPTION1_X
-OPTION3_X = OPTION1_X
-OPTION4_X = OPTION1_X
-OPTION5_X = OPTION1_X
 
-OPTION_Y_DIFF = 150
-OPTION1_Y = 100
+OPTION_X = 50
+OPTION_Y_DIFF = 120
+OPTION1_Y = 80
 OPTION2_Y = OPTION1_Y + OPTION_Y_DIFF
 OPTION3_Y = OPTION2_Y + OPTION_Y_DIFF
 OPTION4_Y = OPTION3_Y + OPTION_Y_DIFF
 OPTION5_Y = OPTION4_Y + OPTION_Y_DIFF
+OPTION6_Y = OPTION5_Y + OPTION_Y_DIFF
+OPTION7_Y = OPTION6_Y + OPTION_Y_DIFF
 
 OPTION_SIZE_X = 10
-OPTION_SIZE_Y = 3
+OPTION_SIZE_Y = 2
 
 SEARCH_ENTRY_X = 300
 SEARCH_ENTRY_Y = 100
@@ -64,27 +62,37 @@ class mainGUI:
         self.option_search = Button(self.window, text="유저 검색",\
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
                                     font=self.font_option, command=self.option_search_func)
-        self.option_search.place(x=OPTION1_X,y=OPTION1_Y)
+        self.option_search.place(x=OPTION_X,y=OPTION1_Y)
 
         self.option_goal = Button(self.window,text="목표치 설정", \
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
                                     font=self.font_option, command=self.option_goal_func)
-        self.option_goal.place(x=OPTION2_X,y=OPTION2_Y)
+        self.option_goal.place(x=OPTION_X,y=OPTION2_Y)
 
         self.option_todo = Button(self.window,text="내 할일",\
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
                                     font=self.font_option, command=self.option_todo_func)
-        self.option_todo.place(x=OPTION3_X,y=OPTION3_Y)
+        self.option_todo.place(x=OPTION_X,y=OPTION3_Y)
 
         self.option_history = Button(self.window,text="검색 기록", \
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
                                     font=self.font_option, command=self.option_history_func)
-        self.option_history.place(x=OPTION4_X,y=OPTION4_Y)
+        self.option_history.place(x=OPTION_X,y=OPTION4_Y)
 
         self.option_popup = Button(self.window,text="팝업 스토어",\
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
                                     font=self.font_option, command=self.option_popup_func)
-        self.option_popup.place(x=OPTION5_X,y=OPTION5_Y)
+        self.option_popup.place(x=OPTION_X,y=OPTION5_Y)
+
+        self.option_popup = Button(self.window,text="그래프",\
+                                    width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
+                                    font=self.font_option, command=self.option_graph_func)
+        self.option_popup.place(x=OPTION_X,y=OPTION6_Y)
+
+        self.option_popup = Button(self.window,text="데베",\
+                                    width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
+                                    font=self.font_option, command=self.option_database_func)
+        self.option_popup.place(x=OPTION_X,y=OPTION7_Y)
 
     def clear_objects(self):
         for object in self.objects:
@@ -197,6 +205,21 @@ class mainGUI:
         # 지도 이미지 라벨 생성
         self.map_image.append(Label(self.window,image=tk_image))
         self.map_image[0].place(x=600,y=100)
+
+    def option_graph_func(self):
+        self.clear_objects()
+        self.option = "Graph"
+
+        self.objects.append(Canvas(self.window, width=200, height=150, bg="white", bd=2))
+        self.objects[-1].pack()
+        self.graph = self.objects[-1]
+
+        # 가운데를 지나는 파란색 선 그리기
+        self.graph.create_line(0, int(200/2), 100, int(200/2), fill="blue")
+    
+    def option_database_func(self):
+        self.clear_objects()
+        self.option = "Database"
 
     def _make_search_entry(self):
         self.objects.append(Entry(self.window, font=self.font_search_entry))
