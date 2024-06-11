@@ -20,7 +20,7 @@ constexpr int NAME_SIZE = 36;
 constexpr char CS_WRITE = 0;
 constexpr char CS_READ = 1;
 constexpr char SC_GIVE = 2;
-constexpr const char* SERVER_ADDR = "125.190.105.174";
+constexpr const char* SERVER_ADDR = "192.168.219.100";
 
 enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND };
 

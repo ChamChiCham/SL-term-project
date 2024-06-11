@@ -43,12 +43,16 @@ SEARCH_ITEM_DIFF = 120
 
 class mainGUI:
     def __init__(self):
+        self.image = []
         self.window = Tk()
         self.window.title("너, 로아 열심히 하고 있니?")
         self.window.geometry("1280x960")
         self.window.configure(bg="black")
-
-        self.make_fonts()        
+        self.im=Image.open(("background.png"))
+        self.image.append(ImageTk.PhotoImage(self.im))
+        self.label = Label(self.window, image = self.image[0])
+        self.label.place(x=-2,y=-2)
+        self.make_fonts()
         self.make_ui()
         self.objects = []
         self.option = "None"
@@ -61,6 +65,7 @@ class mainGUI:
         self.font_history = font.Font(self.window, size=24, family='맑은 고딕', weight="bold")
 
     def make_ui(self):
+
         self.option_search = Button(self.window, text="유저 검색",\
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
                                     font=self.font_option, command=self.option_search_func)
