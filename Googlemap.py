@@ -40,8 +40,8 @@ class Googlemap:
         zoom = 13
 
         Google_API_Key = 'AIzaSyCzFgc9OGnXckq1-JNhSCVGo9zIq1kSWcE'
-        center_lat = (self.fastfoods[0]['lat'])
-        center_lng = (self.fastfoods[0]['lng'])
+        center_lat = ("37.5479258")
+        center_lng = ("127.0569359")
         self.map_url = f"https://maps.googleapis.com/maps/api/staticmap?center={center_lat},{center_lng}&zoom={zoom}&size=400x400&maptype=roadmap"
 
         marker_urls = ""
@@ -65,5 +65,13 @@ class Googlemap:
     def getResponse(self):
         return self.response
 
-gm = Googlemap()
-print(gm.getMapUrl())
+    def getName(self):
+        self.namelist = []
+
+        for i in self.fastfoods:
+            self.namelist.append(i["name"])
+
+        return self.namelist
+
+    def getAddress(self):
+        return self.fastfoods[0]["address"]
