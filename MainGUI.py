@@ -117,8 +117,6 @@ class mainGUI:
             case "Popup":
                 self.map_image[0].destroy()
                 self.label.destroy()
-            case "Todo":
-                self.label.destroy()
             case "Graph":
                 self._delete_items()
                 for label in self.graph_labels:
