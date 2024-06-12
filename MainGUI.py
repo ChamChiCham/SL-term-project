@@ -3,6 +3,8 @@ from tkinter import *
 from tkinter import font
 from winsound import *
 from functools import partial
+
+import SearchDir
 import alram
 from io import BytesIO
 import urllib
@@ -297,7 +299,6 @@ class mainGUI:
         self.objects[-1].bind("<Return>", self._do_search)
         self.objects[-1].place(x=500, y=50)
         self.entry = self.objects[-1]
-
         self.objects.append(Button(self.window, width=10, height=5, command=self._do_search))
         self.objects[-1].place(x=850, y=30)
         self.entry_button = self.objects[-1]
@@ -306,7 +307,7 @@ class mainGUI:
 
     def _do_search(self, event=None):
         name = str(self.entry.get())
-
+        SearchDir.searchDir(name)
         if not name:
             return
         if self.option == "Graph":
