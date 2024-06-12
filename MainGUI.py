@@ -261,11 +261,11 @@ class mainGUI:
         self.namelist = gm.getName()
         self.address = gm.getAddress()
         self.objects.append(Label(self.window,text = "모코코 팝업 프랭크 버거", font = self.font_history))
-        self.objects.append(Label(self.window,text = self.namelist[0],font = self.font_option))
+        self.objects.append(Label(self.window,text = self.namelist,font = self.font_option))
         self.objects.append(Label(self.window,text = "주소 : " + self.address,font = self.font_option))
         self.objects[0].place(x=570,y=120)
-        self.objects[1].place(x=580,y=360)
-        self.objects[2].place(x=450,y=800)
+        self.objects[1].place(x=530,y=360)
+        self.objects[2].place(x=510,y=800)
 
     def option_graph_func(self):
         self.clear_objects()

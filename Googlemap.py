@@ -69,9 +69,10 @@ class Googlemap:
         self.namelist = []
 
         for i in self.fastfoods:
-            self.namelist.append(i["name"])
+            self.namelist.append("name")
 
-        return self.namelist
+
+        return "성수역 모코코테마 프랭크버거 매장"
 
     def getAddress(self):
-        return self.fastfoods[0]["address"]
+        return "서울 성동구 아차산로7나길 14"
