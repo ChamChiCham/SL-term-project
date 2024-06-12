@@ -38,6 +38,8 @@ class time_job:
             bot.sendMessage(self.user_id, "카오스던전 미실시")
         if (self.Epona == False):
             bot.sendMessage(self.user_id, "에포나퀘스트 미실시")
+        if (self.Guradian and self.Epona and self.Chaos == True):
+            bot.sendMessage(self.user_id, "오늘의 일퀘 완료!")
 
     ###### 알람 리셋 시키기 #############
     def resetAlarmdata(self):

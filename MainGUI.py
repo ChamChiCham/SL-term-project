@@ -9,14 +9,14 @@ import urllib
 import urllib.request
 from PIL import Image,ImageTk
 import Googlemap
-import APIprocess
+#import APIprocess
 import Neededgold
 from SearchDir import searchDir
 import fileDuplicator
 from PIL import Image, ImageTk
 import io
 import requests
-import spam
+#import spam
 import re
 
 OPTION_X = 50
@@ -113,10 +113,18 @@ class mainGUI:
             case "Search":
                 self._delete_items()
             case "Goal":
-                self._delete_items()   
+                self._delete_items()
             case "Popup":
                 self.map_image[0].destroy()
                 self.label.destroy()
+            case "Todo":
+                self.label.destroy()
+            case "Graph":
+                self._delete_items()
+                for label in self.graph_labels:
+                    label.destroy()
+            case _:
+                pass
 
     def option_search_func(self):
         # clear objects
@@ -141,24 +149,48 @@ class mainGUI:
     def option_todo_func(self):
         self.clear_objects()
         self.option = "Todo"
+
+        self.imTodoback=Image.open(("roacon.jpg"))
+        self.image.append(ImageTk.PhotoImage(self.imTodoback))
+        self.label = Label(self.window, image = self.image[1])
+        self.label.place(x=270,y=160)
+
         self.objects.append(Entry(self.window, font=self.font_search_entry))
         self.objects[0].bind("<Return>", self._do_id)
         self.entry = self.objects[0]
+        self.objects.append(Entry(self.window, font=self.font_search_entry))
+        self.objects[1].bind("<Return>", self._do_id)
+        self.entry2 = self.objects[1]
         self.objects.append(Button(self.window, width=10, height=5, command=self._setChaos))
         self.objects.append(Button(self.window, width=10, height=5, command=self._setEpona))
         self.objects.append(Button(self.window, width=10, height=5, command=self._setGuardian))
 
-        self.objects[0].place(x=600, y=50)
-        self.objects[1].place(x=400, y=200)
-        self.objects[2].place(x=600, y=200)
-        self.objects[3].place(x=800, y=200)
+        self.objects[0].place(x=700, y=50)
+        self.objects[1].place(x=700, y=110)
+        self.objects[2].place(x=400, y=400)
+        self.objects[3].place(x=700, y=400)
+        self.objects[4].place(x=1000, y=400)
 
         self.objects.append(Label(self.window, text="X", font=self.font_search_entry))
         self.objects.append(Label(self.window, text="X", font=self.font_search_entry))
         self.objects.append(Label(self.window, text="X", font=self.font_search_entry))
-        self.objects[4].place(x=400, y=400)
-        self.objects[5].place(x=600, y=400)
-        self.objects[6].place(x=800, y=400)
+        self.objects[5].place(x=420, y=600)
+        self.objects[6].place(x=720, y=600)
+        self.objects[7].place(x=1020, y=600)
+
+        self.objects.append(Label(self.window,text = "메일 입력", font = self.font_search_entry))
+        self.objects.append(Label(self.window,text = "텔레그램 코드 입력", font = self.font_search_entry))
+        self.objects.append(Label(self.window,text = "내 할일 설정하기", font = self.font_search_entry))
+        self.objects.append(Label(self.window,text = "카오스 게이트", font = self.font_search_entry))
+        self.objects.append(Label(self.window,text = "에포나 일일 퀘스트", font = self.font_search_entry))
+        self.objects.append(Label(self.window,text = "가디언 토벌", font = self.font_search_entry))
+
+        self.objects[8].place(x=400, y=50)
+        self.objects[9].place(x=400, y=110)
+        self.objects[10].place(x=630, y=200)
+        self.objects[11].place(x=350, y=300)
+        self.objects[12].place(x=620, y=300)
+        self.objects[13].place(x=960, y=300)
 
     def _setChaos(self):
         self._tj.setChaos_toggle()
@@ -168,7 +200,8 @@ class mainGUI:
         else:
             text = "O"
 
-        self.objects[4].configure(text=text)
+        self.objects[5].configure(text=text)
+        self._tj.sendAlarm()
 
     def _setEpona(self):
         self._tj.setEpona_toggle()
@@ -178,7 +211,8 @@ class mainGUI:
         else:
             text = "O"
 
-        self.objects[5].configure(text=text)
+        self.objects[6].configure(text=text)
+        self._tj.sendAlarm()
 
     def _setGuardian(self):
         self._tj.setGuradian_toggle()
@@ -188,7 +222,8 @@ class mainGUI:
         else:
             text = "O"
 
-        self.objects[6].configure(text=text)
+        self.objects[7].configure(text=text)
+        self._tj.sendAlarm()
 
     def option_history_func(self):
         self.clear_objects()
@@ -239,8 +274,10 @@ class mainGUI:
 
         self.option = "Graph"
 
+        self.graph_labels = []
+        
         self.objects.append(Canvas(self.window, width=GRAPH_WIDTH, height=GRAPH_HEIGHT, bg="white", bd=2))
-        self.objects[-1].place(x=350,y=200)
+        self.objects[-1].place(x=350, y=200)
         self.graph = self.objects[-1]
     
     def option_database_func(self):
@@ -285,12 +322,16 @@ class mainGUI:
         
         level = level.replace(",", "")
         flevel = float(level)
-        spam.write(name, flevel)
+        spam.write(name.encode('cp949'), flevel)
 
     def _get_database(self):
         text = "유저 순위\n\n"
-        data = spam.get()
-        print(data)
+
+        cp949_datas = spam.get()
+        data = []
+        for data in cp949_datas:
+            data.append(data.decode('cp949'))
+        
         cnt = 1
         for s in data:
             if s:
@@ -309,30 +350,56 @@ class mainGUI:
         # DATABASE
         self._write_database(name, new_API.GetplayerLevel())
 
-        self.graph.delete("all")
-        data = []
 
-        data.append(eval(new_API.GetplayerHeadinfo()[3]))
-        data.append(eval(new_API.GetplayerTopinfo()[3]))
-        data.append(eval(new_API.GetplayerUnderinfo()[3]))
-        data.append(eval(new_API.GetplayerHandsinfo()[3]))
-        data.append(eval(new_API.GetplayerPauldronsinfo()[3]))
-        data.append(eval(new_API.GetplayerWeaponinfo()[3]))
+        self._delete_items()
+        self._idx = 0
+
+        def _make_item_each(func, x, y):
+            self.items.append({})
+            self.items[-1]["Info"] = func()
+            self.items[-1]["x"] = x
+            self.items[-1]["y"] = y
+            self._make_item_icon()
+            self._idx += 1
+
+        self.graph.delete("all")
+
+        func = []
+        func.append(new_API.GetplayerHeadinfo)
+        func.append(new_API.GetplayerTopinfo)
+        func.append(new_API.GetplayerUnderinfo)
+        func.append(new_API.GetplayerHandsinfo)
+        func.append(new_API.GetplayerPauldronsinfo)
+        func.append(new_API.GetplayerWeaponinfo)
+        
+        data = []
+        for i in range(6):
+            data.append(eval(func[i]()[3]))
+
 
         x_diff = GRAPH_WIDTH / len(data)
         y_diff = GRAPH_HEIGHT / 25
         x1 = 0
         x2 = x_diff
         y1 = GRAPH_HEIGHT
+
+
+        for label in self.graph_labels:
+            label.destroy()
+        self.graph_labels = []
+
         for i in data:
-            print(i)
             y2 = GRAPH_HEIGHT - y_diff * i
             self.graph.create_rectangle(x1 + 20, y1, x2 - 20, y2, fill="blue")
             x1 += x_diff
             x2 += x_diff
+            _make_item_each(func[self._idx], x1 + 350 - 100, y1 + 220)
+            self.graph_labels.append(Label(self.window, text=str(i), font=self.font_option, bg="white"))
+            self.graph_labels[-1].place(x=x1 + 265, y= y2 + 150)
         
     def _make_item(self,name):
-        self.image = []
+
+        self._search_image = []
 
         # item delete
         self._delete_items()
@@ -391,8 +458,8 @@ class mainGUI:
         with urllib.request.urlopen(self.items[-1]["Info"][0]) as u:
              raw_data=u.read()
         im=Image.open(BytesIO(raw_data))
-        self.image.append(ImageTk.PhotoImage(im))
-        self.items[-1]["Icon"] = Button(self.window, image=self.image[-1])
+        self._search_image.append(ImageTk.PhotoImage(im))
+        self.items[-1]["Icon"] = Button(self.window, image=self._search_image[-1])
 
         if self.option == "Search":
             self.items[-1]["Icon"].bind("<Button-1>", partial(self._item_exp_on, self._idx))
@@ -458,14 +525,16 @@ class mainGUI:
         self.items = []
 
     def _do_id(self, event=None):
-        name = str(self.entry.get())
+        email = str(self.entry.get())
+        name = str(self.entry2.get())
         if not name:
             return
+        if not email:
+            return
 
-        self._sendmail(name)
+        self._sendmail(name,email)
 
-    def _sendmail(self, name):
+    def _sendmail(self, name,email):
         self._tj = alram.time_job(user_id = name)
-        self._tj.sendMail(name)
-        self._tj.resetAlarmdata()
-        self._tj.scheduleReset()
+        print(name)
+        self._tj.sendMail(email)
