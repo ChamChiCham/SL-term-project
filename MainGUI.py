@@ -68,43 +68,44 @@ class mainGUI:
         self.font_search_entry = self.font_option
         self.font_search_item_name = font.Font(self.window, size=14, family='맑은 고딕')
         self.font_history = font.Font(self.window, size=24, family='맑은 고딕', weight="bold")
+        self.font_database = font.Font(self.window, size=30, family='맑은 고딕', weight="bold")
 
     def make_ui(self):
 
         self.option_search = Button(self.window, text="유저 검색",\
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
-                                    font=self.font_option, command=self.option_search_func)
+                                    font=self.font_option, command=self.option_search_func, bg="white")
         self.option_search.place(x=OPTION_X,y=OPTION1_Y)
 
         self.option_goal = Button(self.window,text="목표치 설정", \
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
-                                    font=self.font_option, command=self.option_goal_func)
+                                    font=self.font_option, command=self.option_goal_func, bg="white")
         self.option_goal.place(x=OPTION_X,y=OPTION2_Y)
 
         self.option_todo = Button(self.window,text="내 할일",\
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
-                                    font=self.font_option, command=self.option_todo_func)
+                                    font=self.font_option, command=self.option_todo_func, bg="white")
         self.option_todo.place(x=OPTION_X,y=OPTION3_Y)
 
         self.option_history = Button(self.window,text="검색 기록", \
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
-                                    font=self.font_option, command=self.option_history_func)
+                                    font=self.font_option, command=self.option_history_func, bg="white")
         self.option_history.place(x=OPTION_X,y=OPTION4_Y)
 
         self.option_popup = Button(self.window,text="팝업 스토어",\
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
-                                    font=self.font_option, command=self.option_popup_func)
+                                    font=self.font_option, command=self.option_popup_func, bg="white")
         self.option_popup.place(x=OPTION_X,y=OPTION5_Y)
 
-        self.option_popup = Button(self.window,text="그래프",\
+        self.option_graph = Button(self.window,text="그래프",\
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
-                                    font=self.font_option, command=self.option_graph_func)
-        self.option_popup.place(x=OPTION_X,y=OPTION6_Y)
+                                    font=self.font_option, command=self.option_graph_func, bg="white")
+        self.option_graph.place(x=OPTION_X,y=OPTION6_Y)
 
-        self.option_popup = Button(self.window,text="순위",\
+        self.option_database = Button(self.window,text="순위",\
                                     width=OPTION_SIZE_X, height=OPTION_SIZE_Y,\
-                                    font=self.font_option, command=self.option_database_func)
-        self.option_popup.place(x=OPTION_X,y=OPTION7_Y)
+                                    font=self.font_option, command=self.option_database_func, bg="white")
+        self.option_database.place(x=OPTION_X,y=OPTION7_Y)
 
     def clear_objects(self):
         for object in self.objects:
@@ -112,27 +113,38 @@ class mainGUI:
         self.objects = []
 
 
+
+
         match self.option:
             case "Search":
+                self.option_search.configure(bg="white")
                 self._delete_items()
             case "Goal":
+                self.option_goal.configure(bg="white")
                 self._delete_items()
+            case "Todo":
+                self.option_todo.configure(bg="white")
+                self.label.destroy()
+            case "History":
+                self.option_history.configure(bg="white")
             case "Popup":
+                self.option_popup.configure(bg="white")
                 self.map_image[0].destroy()
                 self.label.destroy()
-            case "Todo":
-                self.label.destroy()
+    
             case "Graph":
+                self.option_graph.configure(bg="white")
                 self._delete_items()
                 for label in self.graph_labels:
                     label.destroy()
-            case _:
-                pass
+            case "Database":
+                self.option_database.configure(bg="white")
 
     def option_search_func(self):
         # clear objects
         self.clear_objects()
         self.option = "Search"
+        self.option_search.configure(bg="yellow")
 
         self._make_search_entry()
 
@@ -140,6 +152,7 @@ class mainGUI:
         # clear objects
         self.clear_objects()
         self.option = "Goal"
+        self.option_goal.configure(bg="yellow")
 
         self.objects.append(Label(self.window, text="Goal: ", font=self.font_search_entry))
         self.goal_label = self.objects[-1]
@@ -152,6 +165,7 @@ class mainGUI:
     def option_todo_func(self):
         self.clear_objects()
         self.option = "Todo"
+        self.option_todo.configure(bg="yellow")
 
         self.imTodoback=Image.open(("roacon.jpg"))
         self.image.append(ImageTk.PhotoImage(self.imTodoback))
@@ -231,6 +245,7 @@ class mainGUI:
     def option_history_func(self):
         self.clear_objects()
         self.option = "History"
+        self.option_history.configure(bg="yellow")
 
         text = "검색기록\n\n"
         duplicator = []
@@ -247,6 +262,8 @@ class mainGUI:
         self.mokoko_image =[]
         self.clear_objects()
         self.option = "Popup"
+        self.option_popup.configure(bg="yellow")
+
         gm = Googlemap.Googlemap()
         self.url = gm.getMapUrl()
         #self.url = "https://maps.googleapis.com/maps/api/staticmap?center=37.3719161438,127.1623145413&zoom=13&size=400x400&maptype=roadmap&markers=color:red%7C37.3719161438,127.1623145413&key=AIzaSyCzFgc9OGnXckq1-JNhSCVGo9zIq1kSWcE"
@@ -271,10 +288,10 @@ class mainGUI:
 
     def option_graph_func(self):
         self.clear_objects()
+        self.option = "Graph"
+        self.option_graph.configure(bg="yellow")
 
         self._make_search_entry()
-
-        self.option = "Graph"
 
         self.graph_labels = []
         
@@ -285,14 +302,15 @@ class mainGUI:
     def option_database_func(self):
         self.clear_objects()
         self.option = "Database"
+        self.option_database.configure(bg="yellow")
 
         text = "\n"
 
         # DATABASE
         text = self._get_database()
 
-        self.objects.append(Label(self.window, text=text, font=self.font_history))
-        self.objects[-1].place(x=550, y=200)
+        self.objects.append(Label(self.window, text=text, font=self.font_database))
+        self.objects[-1].place(x=500, y=200)
 
     def _make_search_entry(self):
         self.objects.append(Entry(self.window, font=self.font_search_entry))
