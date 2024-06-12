@@ -11,3 +11,6 @@ class fileDuplicator:
 
     def getHistory(self):
         return self.history
+    
+    def writeHisory(self):
+        pass
