@@ -16,7 +16,7 @@ import fileDuplicator
 from PIL import Image, ImageTk
 import io
 import requests
-import spam
+#import spam
 import re
 
 OPTION_X = 50

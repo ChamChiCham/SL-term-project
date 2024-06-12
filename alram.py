@@ -1,11 +1,12 @@
 import schedule
 import time
 import smtplib
-s = smtplib.SMTP("smtp.gmail.com", 587)
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+s = smtplib.SMTP("smtp.naver.com", 587)
 s.starttls()
 s.ehlo()
-s.login("yungjun0319@gmail.com","aazx tspf bhrk hbvl")
-
+s.login("yungjun0319@naver.com","@Dlrla331")
 import telepot
 bot = telepot.Bot('7475858020:AAG-hMeAI2e5cAmOK9FYvUosZaQM4h3ldpc')
 bot.getMe()
@@ -28,11 +29,18 @@ class time_job:
 
     #### 메일 보내는 부분 ####
     def sendMail(self,sender_add):
-        s.sendmail("yungjun0319@gmail.com", "yungjun0319@gmail.com", "welcome to lostark")
+        msg = MIMEMultipart()
+        msg["From"] = "yungjun0319@naver.com"
+        msg["To"] = sender_add
+        msg["Subject"] = "lostark alram"
 
+        msg.attach(MIMEText("welcome to lostark this is your tesk! Guradian: " + str(self.Guradian) + " Epona: " + str(self.Epona) + " Chaos: " + str(self.Chaos), "plain"))
+        s.sendmail("yungjun0319@naver.com",sender_add, msg.as_string())
+        print(msg.as_string())
     ##### 텔레그램 봇 알람 보내는 부분 ######
     def sendAlarm(self):
         if (self.Guradian == False):
+
             bot.sendMessage(self.user_id, "가디언 토벌 미실시")
         if (self.Chaos == False):
             bot.sendMessage(self.user_id, "카오스던전 미실시")
