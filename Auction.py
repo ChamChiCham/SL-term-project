@@ -32,8 +32,6 @@ class getActionAPI:
         self.response = requests.post(url, headers=self.postheaders, data=data)
         self.res = requests.get(url,headers=self.getheaders)
         self.jsonObject = self.res
-        print(self.response)
-        print(self.jsonObject)
 
 b = getActionAPI()
 b.getAction("")

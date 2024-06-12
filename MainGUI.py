@@ -9,14 +9,14 @@ import urllib
 import urllib.request
 from PIL import Image,ImageTk
 import Googlemap
-#import APIprocess
+import APIprocess
 import Neededgold
 from SearchDir import searchDir
 import fileDuplicator
 from PIL import Image, ImageTk
 import io
 import requests
-#import spam
+import spam
 import re
 
 OPTION_X = 50
@@ -59,6 +59,7 @@ class mainGUI:
         self.objects = []
         self.option = "None"
         self.window.mainloop()
+        self._search_image = []
 
     def make_fonts(self):
         self.font_option = font.Font(self.window, size=20, family='맑은 고딕', weight="bold")
@@ -232,7 +233,6 @@ class mainGUI:
         text = "검색기록\n\n"
         duplicator = []
         duplicator = fileDuplicator.fileDuplicator().getHistory()
-        print(duplicator)
         for s in duplicator:
             text += s
         text = text[:-1]
@@ -317,8 +317,6 @@ class mainGUI:
     def _write_database(self, name, level):
         if not name or not level:
             return 
-        if re.search('[가-힣]', name) is not None:
-            return
         
         level = level.replace(",", "")
         flevel = float(level)
@@ -329,8 +327,8 @@ class mainGUI:
 
         cp949_datas = spam.get()
         data = []
-        for data in cp949_datas:
-            data.append(data.decode('cp949'))
+        for st in cp949_datas:
+            data.append(st.decode('cp949'))
         
         cnt = 1
         for s in data:

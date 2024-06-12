@@ -36,7 +36,6 @@ class Get_char_json:
 
         self.response = requests.get(url, headers=self.headers)
         self.jsonObject = self.response.json()
-        print(self.jsonObject[1])
         #만약 전체 다 받아오고 싶으면
         # self.jsonObject[번호] << 이걸로 받아 오면 됨
         # 0 - 무기
@@ -392,8 +391,3 @@ class Get_char_json:
         # Element_006여기부터 Element_000에 각인하나 001에 각인 하나 있음 이거 찾아야함
 
         return Braceletinfo
-
-
-a = Get_char_json("넹븝")
-a.getAmorizes()
-print(a.GetplayerLevel())

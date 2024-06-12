@@ -74,7 +74,7 @@ class Neededgold:
             sum = 0
 
         if self.equipment[1]=='무기':
-            sum = sum*weapon_Mul
+            sum = sum * weapon_Mul
 
         return sum
 
